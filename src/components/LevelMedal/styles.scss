@@ -1,0 +1,66 @@
+@import '../../assets/scss/variables/variables';
+
+.lv-wrapper {
+  width: 45px;
+  height: 45px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  .item {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    position: relative;
+    &-inner {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      .number {
+        width: 70%;
+        height: 40%;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        text-align: center;
+        font-size: 10px;
+        color: $level-active-border;
+        transform: translate(-50%, -50%);
+        font-weight: 600;
+        display:-webkit-box;
+        -webkit-line-clamp:1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        word-break: break-word;
+        line-height: 20px;
+      }
+      .flash,
+      .crown,
+      .elip {
+        width: 45px;
+        height: 45px;
+        position: absolute;
+      }
+      .elip {
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+      }
+      .crown {
+        width: 18px;
+        height: 13px;
+        top: 0;
+        left: 50%;
+        transform: translate(-50%, -30%);
+      }
+      .flash {
+        width: 28px;
+        height: 23px;
+        left: 6px;
+        top: 6px;
+      }
+    }
+  }
+}

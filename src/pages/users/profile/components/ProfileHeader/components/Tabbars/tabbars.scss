@@ -1,0 +1,40 @@
+@import "../../../../../../../assets/scss/variables/variables";
+@import "../../../../../../../assets/scss/customize";
+
+#profile_tabbar {
+  .nav {
+    &-item {
+      .nav-link {
+        border-radius: 6px;
+        margin: 0px 2px;
+        gap: 5px;
+        align-items: center;
+        transition: all 0.1s ease;
+        color: $menu-grey-color;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        @include devices(sm) {
+          padding: 5px 8px;
+          span {
+            font-size: 12px;
+          }
+        }
+        @include devices(xs) {
+          svg {
+            display: none;
+          }
+        }
+        &:hover {
+          background: $menu-active-bg;
+        }
+        &.active {
+          background: $main-color;
+          color: white;
+        }
+        &:after {
+          display: none;
+        }
+      }
+    }
+  }
+}

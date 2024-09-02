@@ -1,0 +1,17 @@
+@import "@src/assets/scss/customize.scss";
+
+.assign-container {
+  @include devices(sm) {
+    display: block !important;
+    margin-top: 0 !important;
+    .assign {
+      &-icon {
+        transform: rotate(90deg);
+        margin: 0 !important;
+      }
+      &-item {
+        margin-bottom: 0.5rem;
+      }
+    }
+  }
+}

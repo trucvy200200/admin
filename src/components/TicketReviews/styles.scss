@@ -1,0 +1,24 @@
+@import "@src/assets/scss/customize.scss";
+@import "@src/assets/scss/variables/variables";
+
+.prod_reviews {
+  ul {
+    list-style-type: none;
+  }
+  .review_list_wrapper {
+    padding: 10px;
+    border-radius: 5px;
+    position: relative;
+    overflow: hidden;
+    &::before {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 80px;
+      background: linear-gradient(0deg, transparent 0%, rgba(143, 173, 192, 0.079) 35%, rgba(113, 151, 175, 0.315) 100%);
+      z-index: 9;
+      top: 0;
+      left: 0;
+    }
+  }
+}

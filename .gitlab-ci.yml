@@ -1,0 +1,50 @@
+default:
+  image: node:16
+
+stages:
+  - deploy
+
+deploy-staging:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    # chạy ssh-agent tương ứng với Gitlab Runner hiện tại
+    - eval $(ssh-agent -s)
+    # thêm nội dung của biến SSH_PRIVATE_KEY vào agent store
+    - bash -c 'ssh-add <(echo "$SSH_PRIVATE_KEY")'
+    # tạo folder ~/.ssh
+    - mkdir -p ~/.ssh
+    # Scan lấy SSH Host key cho địa chỉ IP server
+    # Được kết quả bao nhiêu thì thêm vào file known_hosts
+    - ssh-keyscan -H $SSH_SERVER_IP >> ~/.ssh/known_hosts
+    # Sửa lại quyền của file known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - yarn install
+    - yarn build:stag
+    - rsync -atv --progress --delete ./dist/* $SSH_USER@$SSH_SERVER_IP:$PATH_TO_PROJECT/www/wolcg/admin
+  only:
+    - staging
+
+deploy-latest:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    # chạy ssh-agent tương ứng với Gitlab Runner hiện tại
+    - eval $(ssh-agent -s)
+    # thêm nội dung của biến SSH_PRIVATE_KEY vào agent store
+    - bash -c 'ssh-add <(echo "$SSH_PRIVATE_KEY")'
+    # tạo folder ~/.ssh
+    - mkdir -p ~/.ssh
+    # Scan lấy SSH Host key cho địa chỉ IP server
+    # Được kết quả bao nhiêu thì thêm vào file known_hosts
+    - ssh-keyscan -H $SSH_SERVER_IP >> ~/.ssh/known_hosts
+    # Sửa lại quyền của file known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - yarn install
+    - yarn build:prod
+    - rsync -atv --progress --delete ./dist/* $SSH_USER@$SSH_SERVER_IP:$PATH_TO_PROJECT/www/wolcg/admin
+  only:
+    - main
+  when: manual

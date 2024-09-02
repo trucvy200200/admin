@@ -1,0 +1,21 @@
+// ** Redux Imports
+import { combineReducers } from "redux"
+
+// ** Reducers Imports
+import authReducer from "./auth"
+import navbar from "./navbar"
+import layout from "./layout"
+import common from "./common"
+import users from "@pages/users/store/reducer"
+import profiles from "@pages/users/profile/store/reducer"
+
+const rootReducer = combineReducers({
+  authReducer,
+  navbar,
+  layout,
+  users,
+  profiles,
+  common
+})
+
+export default rootReducer

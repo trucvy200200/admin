@@ -1,0 +1,231 @@
+// ================================================================================================
+// 	File Name: page-profile.scss
+// 	Description: Page content different types of users page layouts SCSS.
+// 	----------------------------------------------------------------------------------------------
+// 	Item Name: Vuexy  - Vuejs, HTML & Laravel Admin Dashboard Template
+// 	Author: PIXINVENT
+// 	Author URL: http://www.themeforest.net/user/pixinvent
+// ================================================================================================
+
+@import "../bootstrap-extended/include"; // Bootstrap includes
+@import "../components/include"; // Components includes
+@import "../../../../assets/scss/customize.scss";
+
+.sponsor-wrapper {
+  &.desktop {
+    display: none;
+    @include devices(md) {
+      display: block;
+    }
+  }
+  .title {
+    font-weight: bold;
+    font-size: 20px;
+  }
+  border-radius: 10px;
+  width: auto;
+  padding: 1rem;
+  color: black;
+  height: 12rem;
+  border: 0.357rem solid $white;
+  background-color: $white;
+  border-radius: $card-border-radius;
+  box-shadow: $box-shadow;
+}
+
+// User profile Scss
+#user-profile {
+  width: 100%;
+  overflow: hidden auto;
+  /*-------------profile header section---------*/
+  .profile-header {
+    // profile picture container
+    .profile-img-container {
+      position: absolute;
+      bottom: -2rem;
+      left: 2.14rem;
+      z-index: 2;
+
+      @include devices(xl) {
+        bottom: 1rem;
+        right: 1.4rem;
+      }
+
+      // profile image
+      .profile-img {
+        height: 12rem;
+        width: 12rem;
+        border: 0.357rem solid $white;
+        background-color: $white;
+        box-shadow: $box-shadow;
+        position: relative;
+        border-radius: $card-border-radius;
+        .edit-avatar {
+          top: -12px;
+          right: -12px;
+          width: 25px;
+          height: 25px;
+          z-index: 9;
+          box-shadow: $box-shadow;
+          padding: 1px;
+          background-color: $white;
+          position: absolute;
+          cursor: pointer;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          &.check{
+            right: 6px;
+          }
+          &.close{
+            right: -22px;
+          }
+        }
+        .uppy-wrapper {
+          position: absolute;
+          right: 0;
+          top: 0;
+          opacity: 0;
+          width: 100%;
+          height: 100%;
+          div {
+            width: 100%;
+            height: 100%;
+          }
+        }
+      }
+    }
+
+    .qr-img-container {
+      display: flex;
+      position: absolute;
+      bottom: -2rem;
+      right: 2.14rem;
+      @include devices(xl) {
+        bottom: 1rem;
+        right: 1.4rem;
+      }
+      .sponsor-wrapper {
+        @include devices(md) {
+          display: none;
+        }
+      }
+      z-index: 2;
+
+      // profile image
+      .profile-img {
+        height: 12rem;
+        width: 12rem;
+        border: 0.357rem solid $white;
+        background-color: $white;
+        border-radius: $card-border-radius;
+        box-shadow: $box-shadow;
+      }
+    }
+
+    // profile navbar padding
+    .profile-header-nav {
+      .navbar {
+        padding: 0.8rem 1rem;
+
+        // navbar toggle button
+        .navbar-toggler {
+          line-height: 0;
+        }
+        .profile-tabs {
+          .nav-item {
+            i,
+            svg {
+              margin-right: 0;
+            }
+          }
+          margin-left: 15.2rem;
+          @include devices(xl) {
+            width: 100%;
+            margin-left: 1.2rem;
+          }
+        }
+      }
+    }
+  }
+
+  /*-------- profile info section --------*/
+  #profile-info {
+    // profile star icons
+    .profile-star {
+      color: $gray-100;
+
+      i,
+      svg {
+        // filled star icons
+        &.profile-favorite {
+          fill: $warning;
+          stroke: $warning;
+        }
+      }
+    }
+
+    // filled heart icons
+    .profile-likes {
+      fill: $danger;
+      stroke: $danger;
+    }
+
+    // progress-bar height
+    .profile-polls-info {
+      .progress {
+        height: 0.42rem;
+      }
+    }
+  }
+
+  //profile-latest-img - hover effect
+  .profile-latest-img {
+    transition: all 0.2s ease-in-out;
+    &:hover {
+      transform: translateY(-4px) scale(1.2);
+      z-index: 10;
+    }
+    img {
+      margin-top: 1.28rem;
+    }
+  }
+
+  // Load More Button - Block UI
+  .block-element {
+    .spinner-border {
+      border-width: 0.14rem;
+    }
+  }
+}
+
+// Latest Photo Section - Image size
+@include media-breakpoint-down(lg) {
+  #user-profile {
+    .profile-latest-img {
+      img {
+        width: 100%;
+      }
+    }
+  }
+}
+
+// profile img and title
+@include media-breakpoint-down(sm) {
+  #user-profile {
+    .profile-header {
+      .profile-img-container,
+      .qr-img-container {
+        .profile-img {
+          height: 100px;
+          width: 100px;
+        }
+        .profile-title {
+          h2 {
+            font-size: 1.5rem;
+          }
+        }
+      }
+    }
+  }
+}

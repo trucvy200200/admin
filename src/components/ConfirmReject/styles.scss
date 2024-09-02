@@ -1,0 +1,75 @@
+.delete-modal {
+  .message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    margin-bottom: 10px;
+    gap: 10px;
+    font-weight: 600;
+    svg {
+      width: 35px;
+      height: 35px;
+    }
+  }
+  .btns {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.fade-loading,
+.fade-loading-2 {
+  width: 50px;
+  height: 50px;
+  background-color: #19c251a1;
+  border-radius: 100rem;
+  margin: 10px auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 800;
+  &.error {
+    background-color: #ff3a2ca1;
+    svg {
+      color: #a31111;
+    }
+  }
+  &.info {
+    background-color: #ffce2ca1;
+  }
+}
+
+.fade-loading:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background-color: inherit;
+  animation: fade 1.2s forwards infinite ease-in;
+}
+
+.fade-loading-2:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background-color: inherit;
+  animation: fade 1.2s forwards infinite ease;
+}
+
+@keyframes fade {
+  to {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}

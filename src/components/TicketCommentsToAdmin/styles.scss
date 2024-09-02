@@ -1,0 +1,128 @@
+@import "@src/assets/scss/customize.scss";
+@import "@src/assets/scss/variables/variables";
+
+.prod_reviews {
+  ul {
+    list-style-type: none;
+  }
+  .comment_list_wrapper {
+    border: 1px dashed grey;
+    padding: 0 10px;
+    border-radius: 5px;
+    position: relative;
+    overflow: hidden;
+    &::before {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 80px;
+      background: linear-gradient(0deg, transparent 0%, rgba(143, 173, 192, 0.079) 35%, rgba(113, 151, 175, 0.315) 100%);
+      z-index: 9;
+      top: 0;
+      left: 0;
+    }
+  }
+  .comment_list {
+    margin-top: 1rem;
+    margin-bottom: 0px;
+    padding: 0 1rem;
+    max-height: 600px;
+    height: 100%;
+    li:not(:last-child) {
+      margin-bottom: 15px;
+    }
+  }
+  .comment_container {
+    .input_form {
+      max-width: 600px;
+      width: 100%;
+      height: auto;
+      display: flex;
+      justify-content: flex-start;
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 5px;
+      .textarea {
+        display: block;
+        max-width: 100%;
+        width: 100%;
+        overflow: hidden;
+        resize: none;
+        min-height: 30px;
+        line-height: 20px;
+        outline: none;
+        padding: 0 8px;
+        border-bottom: 1px solid lightgrey;
+      }
+      .input-wrapper {
+        padding: 10px 10px 5px 10px;
+        border-radius: 10px;
+        background: #efefef;
+      }
+    }
+  }
+
+  ul {
+    gap: 3rem;
+  }
+
+  .user_info {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+
+    .comment_content {
+      padding: 10px;
+      border-radius: 10px;
+      background: #efefef;
+      .user_name {
+      }
+      .user_comment {
+        margin-bottom: 0;
+      }
+    }
+
+    .comment_created {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+
+      .date {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+      }
+    }
+  }
+
+  .user_review {
+    word-break: break-word;
+    margin-top: 1rem;
+  }
+  .button {
+    background-color: transparent;
+    svg {
+      fill: #757576;
+      transition: fill 0.2s ease-out;
+    }
+    &.not-allowed {
+      cursor: not-allowed !important;
+    }
+    color: #757576;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 35px;
+    height: 35px;
+    border-radius: 100rem;
+    transition: background-color 0.2s ease-out;
+    outline: none;
+    border: none;
+    &:hover {
+      svg {
+        fill: #166699;
+      }
+      background-color: #d8d8d8;
+    }
+  }
+}

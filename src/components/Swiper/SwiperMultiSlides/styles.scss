@@ -1,0 +1,28 @@
+.multi_slides {
+  width: 100%;
+  .swiper-button-prev,
+  .swiper-button-next{
+    background-color: white;
+    border-radius: 50%;
+    opacity: 0.8;
+    width: 40px;
+    height: 40px;
+  }
+  .swiper-button-prev {
+    left: -1px !important;
+  
+  }
+  .swiper-button-next {
+    right: -1px !important;
+  }
+  .swiper-pagination {
+    width: 100% !important;
+    bottom: -5px !important;
+  }
+  .swiper-slide {
+    height: 280px !important;
+    img {
+      height: 100% !important;
+    }
+  }
+}
