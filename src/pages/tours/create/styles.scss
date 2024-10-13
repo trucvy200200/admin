@@ -1,0 +1,68 @@
+.descWrapper {
+  border: 1px solid #cbcbcb;
+  padding: 0.438rem 1rem;
+  background-color: #fff;
+  background-clip: padding-box;
+  border-radius: 10px;
+  &.error {
+    border: 1px solid #b72634;
+  }
+  .descToolbar {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border: none;
+    margin: -0.438rem -1rem 0;
+    padding: 0.438rem 1rem;
+    border-bottom: 1px solid grey;
+    .rdw-inline-wrapper {
+      .rdw-option-wrapper[title*="Strikethrough"],
+      .rdw-option-wrapper[title*="Monospace"],
+      .rdw-option-wrapper[title*="Superscript"],
+      .rdw-option-wrapper[title*="Subscript"] {
+        display: none;
+      }
+    }
+    .rdw-list-wrapper {
+      .rdw-option-wrapper[title*="Indent"],
+      .rdw-option-wrapper[title*="Outdent"] {
+        display: none;
+      }
+    }
+    .rdw-link-wrapper,
+    .rdw-embedded-wrapper,
+    .rdw-emoji-wrapper,
+    .rdw-image-wrapper,
+    .rdw-remove-wrapper,
+    .rdw-colorpicker-wrapper {
+      display: none;
+    }
+    .rdw-block-wrapper {
+      width: auto;
+    }
+    .rdw-fontsize-wrapper {
+      max-width: 40px;
+      width: 100%;
+    }
+    .rdw-fontfamily-wrapper {
+      max-width: 60px;
+      width: 100%;
+    }
+    .rdw-block-wrapper,
+    .rdw-fontfamily-wrapper,
+    .rdw-fontsize-wrapper {
+      .rdw-fontsize-dropdown,
+      .rdw-fontfamily-dropdown,
+      .rdw-block-dropdown {
+        a {
+          span {
+            font-size: 12px;
+          }
+        }
+      }
+    }
+  }
+  .descEditor {
+    min-height: 150px;
+    height: 100%;
+  }
+}

@@ -99,10 +99,7 @@ export const canViewMenuGroup = item => {
 
   // ** If resource and action is defined in item => Return based on children visibility (Hide group if no child is visible)
   // ** Else check for ability using provided resource and action along with checking if has any visible child
-  if (!(item.action && item.resource)) {
-    return hasAnyVisibleChild
-  }
-  return ability.can(item.action, item.resource) && hasAnyVisibleChild
+  return hasAnyVisibleChild
 }
 
 export const canViewMenuItem = item => {

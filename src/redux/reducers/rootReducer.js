@@ -8,6 +8,7 @@ import layout from "./layout"
 import common from "./common"
 import users from "@pages/users/store/reducer"
 import profiles from "@pages/users/profile/store/reducer"
+import tours from "@pages/tours/store/reducer"
 
 const rootReducer = combineReducers({
   authReducer,
@@ -15,7 +16,8 @@ const rootReducer = combineReducers({
   layout,
   users,
   profiles,
-  common
+  common,
+  tours
 })
 
 export default rootReducer

@@ -1,13 +1,13 @@
 // ** Auth Endpoints
 export default {
-  loginEndpoint: "/auth/admin/login",
+  loginEndpoint: "/sign-in",
   forgotPasswordEndpoint: "/auth/admin/forgot-password",
   resetPasswordEndpoint: "/auth/admin/reset-password",
   changePasswordEndpoint: "/admin/change-password",
   registerEndpoint: "/auth/admin/register",
   createKYCEndpoint: "/auth/admin/createkyc",
   updateKYCEndpoint: "/auth/admin/updatekyc",
-  logoutEndpoint: "/auth/admin/logout",
+  logoutEndpoint: "/log-out",
 
   // ** This will be prefixed in authorization header with token
   // ? e.g. Authorization: Bearer <token>

@@ -12,7 +12,7 @@ import appLogoLevelActiveFlash from "@src/assets/images/imgs/flash.png"
 //Template config options
 const themeConfig = {
   app: {
-    appName: "WOLCG",
+    appName: "BookingNow",
     appLogoImage: logo,
     appLogoImageSmall: logoSmall,
     appBird: appBird,

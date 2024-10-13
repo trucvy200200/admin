@@ -11,9 +11,8 @@ import { isUserLoggedIn } from "@utils"
 // ** Store & Actions
 import { useDispatch, useSelector } from "react-redux"
 import { handleLogout } from "@store/actions/auth"
-import instances, { instancesV4, instancesV6 } from "@src/@core/plugin/axios"
+import instances, { instancesV2 } from "@src/@core/plugin/axios"
 import { getMyProfile } from "@pages/users/profile/store/action"
-import { getUserWaitingReview, getTotalPendingContracts, SET_COUNTRIES } from "@pages/users/store/action"
 
 // ** Third Party Components
 import { UncontrolledDropdown, DropdownMenu, DropdownToggle, DropdownItem } from "reactstrap"
@@ -23,8 +22,6 @@ import { User, Power } from "react-feather"
 import defaultAvatar from "@src/assets/images/imgs/im_user.png"
 import { LoadingBackground } from "@src/components/Loading/LoadingBackground"
 import { useTranslation } from "react-i18next"
-import { PERMISSION_SCREEN_ENUM } from "@constants/permission-screens-constant"
-import { useCheckPermission } from "@hooks/useCheckPermission"
 import currencyFormat from "@src/utility/UtilityFormat"
 
 const UserDropdown = () => {
@@ -32,7 +29,6 @@ const UserDropdown = () => {
   // ** Store Vars
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const { checkPermission } = useCheckPermission()
   const userData = useSelector((state) => state?.profiles?.user)
   const settings = useSelector((state) => state?.profiles?.setting)
   const wallet = useSelector((state) => state?.wallet)
@@ -42,28 +38,16 @@ const UserDropdown = () => {
 
   useEffect(() => {
     if (isUserLoggedIn() !== null) {
-      dispatch(getMyProfile())
-      instancesV4.get("/setting").then((res) => {
-        if (res?.data?.data) {
-          dispatch({ type: "GET_SETTING", data: res?.data?.data })
-        } else {
-          dispatch({ type: "GET_SETTING", data: null })
-        }
-      })
+      // dispatch(getMyProfile())
     }
   }, [packages?.buyPending, wallet?.pending])
 
   useEffect(() => {
     if (isUserLoggedIn() !== null) {
       id.current = setInterval(() => {
-        dispatch(getMyProfile())
+        // dispatch(getMyProfile())
       }, 60000)
     }
-    instancesV4.get("/country/all").then((res) => {
-      if (res.data.data) {
-        dispatch({ type: SET_COUNTRIES, data: res.data.data })
-      }
-    })
     return () => clearInterval(id.current)
   }, [])
 
@@ -72,12 +56,8 @@ const UserDropdown = () => {
 
   const handleLogoutUser = async () => {
     setLoading(true)
-    const resLocation = await instancesV6
-      .get("")
-      .then((res) => res)
-      .catch(() => null)
-    instances
-      .post("/auth/admin/logout", { ip: resLocation?.data?.ip || "" })
+    instancesV2
+      .post("/log-out")
       .then(() => {
         setLoading(false)
         dispatch(handleLogout())

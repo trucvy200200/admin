@@ -1,5 +1,5 @@
 import axios from 'axios'
-import instances, {instancesV6} from "../../plugin/axios"
+import instances, { instancesV6, instancesV2 } from "../../plugin/axios"
 import jwtDefaultConfig from './jwtDefaultConfig'
 
 export default class JwtService {
@@ -38,9 +38,11 @@ export default class JwtService {
         // ** const { config, response: { status } } = error
         const { config, response } = error
         const originalRequest = config
-
         // ** if (status === 401) {
-        if (response && response.status === 401) {
+        if (response && response.status === 401 && request.status === 403) {
+          removeFromLocalStorage("accessTokenAdmin")
+          removeFromLocalStorage("userDataAdmin")
+          window.location.href = "/"
           if (!this.isAlreadyFetchingAccessToken) {
             this.isAlreadyFetchingAccessToken = true
             this.refreshToken().then(r => {
@@ -52,6 +54,7 @@ export default class JwtService {
 
               this.onAccessTokenFetched(r.data.accessToken)
             })
+            window.location.href = "/"
           }
           const retryOriginalRequest = new Promise(resolve => {
             this.addSubscriber(accessToken => {
@@ -98,7 +101,7 @@ export default class JwtService {
   }
 
   login(...args) {
-    return instances.post(this.jwtConfig.loginEndpoint, ...args)
+    return instancesV2.post(this.jwtConfig.loginEndpoint, ...args)
   }
 
   register(...args) {

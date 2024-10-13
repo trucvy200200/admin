@@ -7,7 +7,7 @@ const NavbarUser = (props) => {
   return (
     <ul className="nav navbar-nav align-items-center ms-auto">
       {/* <NotificationDropdown /> */}
-      <IntlDropdown />
+      {/* <IntlDropdown /> */}
       <UserDropdown />
     </ul>
   )

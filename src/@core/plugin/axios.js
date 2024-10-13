@@ -57,7 +57,7 @@ instances.interceptors.response.use(
 
 /* user axios */
 const instancesV2 = axios.create({
-  baseURL: BASE_CONSTANT.BASE_URL_USER || "http://localhost:3200/api/v2"
+  baseURL: BASE_CONSTANT.SYSTEM_URL || "http://localhost:3200/api/v2"
 })
 
 instancesV2.interceptors.request.use(

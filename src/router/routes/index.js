@@ -4,6 +4,7 @@ import { Fragment } from "react"
 // ** Routes Imports
 import DashboardRoutes from "./Dashboards"
 import AuthenticationRoutes from "./Auth"
+import ToursRoutes from "./Tours"
 
 // ** Layouts
 import BlankLayout from "@layouts/BlankLayout"
@@ -31,7 +32,7 @@ const TemplateTitle = "%s - Vuexy React Admin Template"
 const DefaultRoute = "/dashboard"
 
 // ** Merge Routes
-const Routes = [...AuthenticationRoutes, ...DashboardRoutes]
+const Routes = [...AuthenticationRoutes, ...DashboardRoutes, ...ToursRoutes]
 
 const getRouteMeta = (route) => {
   if (isObjEmpty(route.element.props)) {
@@ -64,7 +65,7 @@ const MergeLayoutRoutes = (layout, defaultLayout) => {
             // eslint-disable-next-line multiline-ternary
             isObjEmpty(route.element.props) && isBlank === false
               ? // eslint-disable-next-line multiline-ternary
-                LayoutWrapper
+              LayoutWrapper
               : Fragment
 
           route.element = (

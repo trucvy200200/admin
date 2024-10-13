@@ -4,15 +4,22 @@ import { HiArrowLongLeft } from "react-icons/hi2"
 import { useTranslation } from "react-i18next"
 
 const renderCurrentPath = (pathname, t) => {
-  switch (pathname) {
-    case "/dashboard":
-      return t("Dashboard")
-    case "/profile":
-      return t("Profile")
+  if (pathname.includes("/tours/edit")) {
+    return t("Edit tour")
+  } else
+    switch (pathname) {
+      case "/dashboard":
+        return t("Dashboard")
+      case "/profile":
+        return t("Profile")
+      case "/tours/list":
+        return t("Tour management")
+      case "/tours/create":
+        return t("Create tour")
 
-    default:
-      break
-  }
+      default:
+        break
+    }
 }
 
 const NavbarHistory = () => {

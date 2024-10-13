@@ -12,7 +12,7 @@ const PublicRoute = ({ children, route }) => {
     const restrictedRoute = route.meta && route.meta.restricted
 
     if (user && restrictedRoute) {
-      return <Navigate to={getHomeRouteForLoggedInUser(user?.isTwoFactorAuthenticationEnabled)} />
+      return <Navigate to={getHomeRouteForLoggedInUser()} />
     }
   }
 

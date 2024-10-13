@@ -130,6 +130,7 @@
     "uppy": "1.21.2",
     "ut2": "^1.4.9",
     "uuid": "^9.0.1",
+    "vuexy-react-admin-dashboard": "file:",
     "wnumb": "1.2.0",
     "xlsx": "^0.18.5",
     "yup": "^0.32.11"

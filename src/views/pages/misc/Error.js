@@ -28,7 +28,7 @@ const Error = () => {
       <Link className="brand-logo" to="/" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
         <img className="inner-logo" src={logo} alt="logo" style={{ width: "60px" }} />
         <h2 className="text-primary" style={{ fontWeight: "bold" }}>
-          WOLCG
+          BookingNow
         </h2>
       </Link>
       <div className="misc-inner p-2 p-sm-3">
@@ -36,7 +36,7 @@ const Error = () => {
           <h2 className="mb-1">{t("Page Not Found")} 🕵🏻‍♀️</h2>
           <p className="mb-2">{t("Oops! 😖 The requested URL was not found on this server")}.</p>
           <Button tag={Link} to="/" color="primary" className="btn-sm-block mb-2">
-          {t("Back to Home")}
+            {t("Back to Home")}
           </Button>
           <img className="img-fluid" src={source} alt="Not authorized page" />
         </div>

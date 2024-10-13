@@ -34,7 +34,7 @@ const NotAuthorized = () => {
       <Link className="brand-logo" to="/" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
         <img className="inner-logo" src={logo} alt="logo" style={{ width: "60px" }} />
         <h2 className="text-primary" style={{ fontWeight: "bold" }}>
-          WOLCG
+          BookingNow
         </h2>
       </Link>
       <div className="misc-inner p-2 p-sm-3">

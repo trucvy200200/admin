@@ -1,6 +1,6 @@
 {
-  "short_name": "BESPOKE - WOLCG Admin",
-  "name": "BESPOKE - WOLCG Admin",
+  "short_name": "Admin",
+  "name": "Admin",
   "icons": [
     {
       "src": "favicon.ico",
@@ -12,5 +12,5 @@
   "background_color": "#FFFFFF",
   "display": "standalone",
   "theme_color": "#FFFFFF",
-  "description": "BESPOKE - WOLCG admin"
+  "description": "admin"
 }
