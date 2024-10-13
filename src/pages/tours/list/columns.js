@@ -1,19 +1,11 @@
 // ** Third Party Components
 import React from "react"
 import { Badge, UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap"
-import { MoreVertical, Edit, FileText } from "react-feather"
+import { MoreVertical, Edit, Check, X } from "react-feather"
 import { Link } from "react-router-dom"
 import { convertTimeDate } from "@src/utility/ConvertDate"
 import currencyFormat from "@src/utility/UtilityFormat"
-import { BASE_CONSTANT, LANGUAGES } from "@src/constants/base-constant"
 import { FiSettings } from "react-icons/fi"
-
-const statusObj = {
-  false: "light-success",
-  true: "light-warning",
-  info: "light-info",
-  danger: "light-danger"
-}
 
 const statusObjColor = (status) => {
   switch (status) {
@@ -36,7 +28,7 @@ const renderStatus = (row) => {
       break
   }
 }
-export const columns = ({ t, navigate }) => [
+export const columns = ({ t, navigate, handleUpdateStatus }) => [
   {
     name: t("No."),
     width: "50px",
@@ -101,14 +93,18 @@ export const columns = ({ t, navigate }) => [
             <MoreVertical size={16} className="cursor-pointer" />
           </DropdownToggle>
           <DropdownMenu container="root">
-            <DropdownItem className="w-100">
-              <FileText size={16} className="mr-50" />
-              <span className="align-middle">{t("Active")}</span>
-            </DropdownItem>
-            <DropdownItem className="w-100">
-              <FileText size={16} className="mr-50" />
-              <span className="align-middle">{t("See detail")}</span>
-            </DropdownItem>
+            {row?.delFlg === 1 ? (
+              <DropdownItem className="w-100" onClick={() => handleUpdateStatus(row?.id, 0)}>
+                <Check size={16} className="mr-50" />
+                <span className="align-middle">{t("Active")}</span>
+              </DropdownItem>
+            ) : (
+              <DropdownItem className="w-100" onClick={() => handleUpdateStatus(row?.id, 1)}>
+                <X size={16} className="mr-50" />
+                <span className="align-middle">{t("Inactive")}</span>
+              </DropdownItem>
+            )}
+
             <DropdownItem className="w-100" onClick={() => navigate(`/tours/edit/${row?.id}`)}>
               <Edit size={16} className="mr-50" />
               <span className="align-middle">{t("Edit")}</span>

@@ -60,9 +60,9 @@ export const getTours = (setLoading) => {
   }
 }
 
-export const changeStatusReview = (reviewData, notification, toggleLoading, getReviews) => {
+export const changeStatusTour = (tour, notification, toggleLoading, getReviews) => {
   return async (dispatch) => {
-    const { id } = reviewData
+    const { id } = tour
     toggleLoading(true)
     await instances
       .put(`/review/${id}`, { displayFlag: !reviewData?.displayFlag })
@@ -83,10 +83,10 @@ export const changeStatusReview = (reviewData, notification, toggleLoading, getR
   }
 }
 
-export const createTour = async (productData, handleSuccess, handleError, endLoading) => {
+export const createTour = async (data, handleSuccess, handleError, endLoading) => {
   try {
     await instances
-      .post("/new-tour", productData)
+      .post("/new-tour", data)
       .then((res) => {
         if (res.data.errCode === 200) {
           handleSuccess("Create tour successfully!")
@@ -107,22 +107,21 @@ export const createTour = async (productData, handleSuccess, handleError, endLoa
   }
 }
 
-export const updateProduct = async (id, packageData, handleSuccess, handleError, close, endLoading) => {
+export const updateTourStatus = async (data, handleSuccess, handleError, endLoading) => {
   try {
     await instances
-      .put(`/owner/product/update/${id}`, packageData)
+      .post(`/update-tour-status/`, data)
       .then((res) => {
         endLoading()
-        if (res?.data?.status) {
-          handleSuccess("Update product successfully!")
-          close()
+        if (res?.status === 200) {
+          handleSuccess("Update status successfully!")
         } else {
-          handleError(res?.data?.meta?.message || "Update product failed!")
+          handleError("Update status failed!")
         }
       })
       .catch((err) => {
         endLoading()
-        handleError(err?.response?.data?.message || "Update product failed!")
+        handleError("Update status failed!")
       })
   } catch (err) {
     endLoading()

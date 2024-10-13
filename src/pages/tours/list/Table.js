@@ -14,7 +14,7 @@ import { Row, Col, Card, InputGroup, Input, Button } from "reactstrap"
 import { NoDataComponent } from "@src/components/NoDataComponent"
 import { useParams, useSearchParams, useNavigate } from "react-router-dom"
 import { selectThemeColors } from "@utils"
-import { getTours } from "../store/action"
+import { getTours, updateTourStatus } from "../store/action"
 import { useTranslation } from "react-i18next"
 import { LoadingBackground } from "@src/components/Loading/LoadingBackground"
 import Spinner from "@src/@core/components/spinner/Loading-spinner-table"
@@ -222,6 +222,22 @@ const Table = () => {
     }
   }
 
+  const handleUpdateStatus = async (id, status) => {
+    setLoading(true)
+    await updateTourStatus(
+      {
+        idTour: id,
+        status
+      },
+      (message) => {
+        toast.success(<SuccessNotificationToast message={message} />)
+        dispatch(getTours(setLoading))
+      },
+      (message) => toast.error(<ErrorNotificationToast message={message} />),
+      () => setLoading(false)
+    )
+  }
+
   return (
     <>
       {pending && <LoadingBackground />}
@@ -239,7 +255,8 @@ const Table = () => {
             progressComponent={<Spinner />}
             columns={columns({
               t,
-              navigate
+              navigate,
+              handleUpdateStatus
             })}
             sortIcon={<ChevronDown />}
             className="react-dataTable no-padding"

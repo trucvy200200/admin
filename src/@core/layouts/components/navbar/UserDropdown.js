@@ -75,10 +75,7 @@ const UserDropdown = () => {
         <DropdownToggle href="/" tag="a" className="nav-link dropdown-user-link" onClick={(e) => e.preventDefault()}>
           <Avatar img={userAvatar} className={`bg-white ${userAvatar ? "" : "default"}`} />
           <div className="user-nav d-sm-flex align-items-start d-none">
-            <span className="user-name font-weight-bold">{userData?.full_name || "---"}</span>
-            <h6 className="ml-50 mb-0 text-white">
-              {userData?.amount ? currencyFormat(userData?.amount) : 0} {settings?.coin_char ? t(String(settings?.coin_char)) : "--"}
-            </h6>
+            <span className="user-name font-weight-bold">{JSON.parse(localStorage.getItem("userDataAdmin"))?.name || "---"}</span>
           </div>
         </DropdownToggle>
         <DropdownMenu end>
