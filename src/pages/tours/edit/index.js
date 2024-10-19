@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react"
 
 import { isObjEmpty } from "@utils"
-import { Row, Col, Button, Form, Input, Label, FormGroup, Card, FormText } from "reactstrap"
+import { Row, Col, Button, Form, Input, Label, FormGroup, Card } from "reactstrap"
 import { useDispatch, useSelector } from "react-redux"
 import { useForm, Controller } from "react-hook-form"
 import classnames from "classnames"
@@ -10,7 +10,7 @@ import { Editor } from "react-draft-wysiwyg"
 import { LoadingBackground } from "@src/components/Loading/LoadingBackground"
 import FileUploaderMultiple from "@src/components/FileUploader/FileUploaderMultiple"
 import { useTranslation } from "react-i18next"
-import { createTour, getTourById } from "../store/action"
+import { updateTourById, getTourById } from "../store/action"
 import { toast } from "react-hot-toast"
 import ErrorNotificationToast from "@src/components/Toast/ToastFail"
 import SuccessNotificationToast from "@src/components/Toast/ToastSuccess"
@@ -18,11 +18,50 @@ import { useSearchParams, useNavigate, useParams } from "react-router-dom"
 import { EditorState, convertToRaw, ContentState } from "draft-js"
 import htmlToDraft from "html-to-draftjs"
 import draftToHtml from "draftjs-to-html"
+import Select, { components } from "react-select"
+import { selectThemeColors } from "@utils"
+import { uploadImages } from "@src/redux/actions/common"
 
 import "flatpickr/dist/themes/material_blue.css"
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css"
 import "@styles/react/apps/app-users.scss"
 import "./styles.scss"
+import "@styles/react/libs/react-select/_react-select.scss"
+
+const { ValueContainer, Placeholder } = components
+
+const CustomValueContainer = ({ children, ...props }) => {
+  return (
+    <ValueContainer {...props}>
+      <Placeholder {...props} isFocused={props.isFocused}>
+        {props.selectProps.placeholder}
+      </Placeholder>
+      {React.Children.map(children, (child) => (child && child.type !== Placeholder ? child : null))}
+    </ValueContainer>
+  )
+}
+
+const filterOptions = [
+  {
+    value: "Nothern+Vietnam",
+    label: "Northern Vietnam"
+  },
+  { value: "Southern+Vietnam", label: "Southern Vietnam" },
+  { value: "Central+Vietnam", label: "Central Vietnam" }
+]
+
+const renderLocation = (location) => {
+  switch (location) {
+    case "Nothern+Vietnam":
+      return "Northern Vietnam"
+    case "Southern+Vietnam":
+      return "Southern Vietnam"
+    case "Central+Vietnam":
+      return "Central Vietnam"
+    default:
+      return "Select location"
+  }
+}
 
 const CreateTour = () => {
   const { t } = useTranslation()
@@ -42,13 +81,13 @@ const CreateTour = () => {
   const { id } = useParams()
   const store = useSelector((state) => state.tours.detail)
   const dispatch = useDispatch()
+  const [location, setLocation] = useState(null)
 
   const {
     register,
     control,
     formState: { errors },
     handleSubmit,
-    reset,
     setValue
   } = useForm()
 
@@ -59,7 +98,7 @@ const CreateTour = () => {
         setLoading,
         (data) => {
           setValue("name", data?.name)
-          setValue("location", data?.location)
+          setLocation(data?.location)
           setValue("address", data?.address)
           setValue("phone", data?.phone)
           setValue("priceAdult", data?.priceAdult)
@@ -68,12 +107,15 @@ const CreateTour = () => {
           setDesc(data?.description)
           const state = data?.description || null
           setEditorState(data?.description ? EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(state).contentBlocks, htmlToDraft(state).entityMap)) : "")
-          //  setPlan(data?.plan)
           const state2 = data?.regulation || null
           setEditorRegulationState(
             data?.regulation ? EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(state2).contentBlocks, htmlToDraft(state2).entityMap)) : ""
           )
           setRegulation(data?.regulation)
+          const state3 = data?.plan || null
+          setEditorPlanState(data?.plan ? EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(state3).contentBlocks, htmlToDraft(state3).entityMap)) : "")
+          setPlan(data?.plan)
+          setImagesUpload(data?.images?.map((image) => image?.urlImage))
         },
         (message) => toast.error(<ErrorNotificationToast message={t(message || "Something wrong!")} />)
       )
@@ -117,25 +159,27 @@ const CreateTour = () => {
     if (loading) return
     if (isObjEmpty(errors)) {
       const obj = {
+        idTour: id,
         name: e.name,
         description: desc,
-        location: e.location,
+        location: location,
         regulation: regulation,
         address: e.address,
-        phoneContact: e.phone,
+        phone: e.phone,
         priceAdult: e.priceAdult,
         priceChild: e.priceChild,
-        durations: e.duration
+        duration: e.duration
       }
       setLoading(true)
-      await createTour(
+      if (uploadImages.length > 0) {
+        obj.images = await uploadImages(imagesUpload)
+      }
+      await updateTourById(
         obj,
         () => {
-          toast.success(<SuccessNotificationToast message={t("Create tour successfully!")} />)
-          navigate("/tours/list")
-          reset()
+          toast.success(<SuccessNotificationToast message={"Update tour successfully!"} />)
         },
-        (message) => toast.error(<ErrorNotificationToast message={t(message || "Create tour failed!")} />),
+        (message) => toast.error(<ErrorNotificationToast message={t(message || "Update tour failed!")} />),
         () => setLoading(false)
       )
     }
@@ -181,27 +225,42 @@ const CreateTour = () => {
                 <Label className="form-label" for="location">
                   {t("Location")} <span className="text-danger">*</span>
                 </Label>
-                <Controller
-                  name="location"
-                  id="location"
-                  control={control}
-                  defaultValue={""}
-                  render={({ field }) => {
-                    return (
-                      <Input
-                        name="location"
-                        placeholder={t("Enter location")}
-                        {...register("location", {
-                          required: true,
-                          validate: (value) => value !== ""
-                        })}
-                        className={classnames({
-                          "is-invalid": errors["location"]
-                        })}
-                        {...field}
-                      />
-                    )
+                <Select
+                  styles={{
+                    container: (provided) => ({
+                      ...provided,
+                      width: "100%",
+                      zIndex: 99991,
+                      height: "auto !important"
+                    }),
+                    valueContainer: (provided) => ({
+                      ...provided,
+                      overflow: "visible"
+                    }),
+                    placeholder: (provided, state) => ({
+                      ...provided,
+                      position: "absolute",
+                      opacity: state.hasValue || state.selectProps.inputValue ? "0" : "1",
+                      visibility: state.hasValue || state.selectProps.inputValue ? "hidden" : "visible",
+                      transition: "all 0.1s ease"
+                    }),
+                    control: (provided) => ({
+                      ...provided,
+                      height: "auto !important"
+                    })
                   }}
+                  components={{
+                    ValueContainer: CustomValueContainer
+                  }}
+                  style={{ width: "100%" }}
+                  placeholder={renderLocation(location)}
+                  theme={selectThemeColors}
+                  className="react-select"
+                  classNamePrefix="select"
+                  options={filterOptions}
+                  isClearable={false}
+                  isSearchable={false}
+                  onChange={({ value }) => setLocation(value)}
                 />
               </FormGroup>
             </Col>
@@ -404,7 +463,6 @@ const CreateTour = () => {
                 />
               </FormGroup>
             </Col>
-
             <Col md="12">
               <FormGroup className="form-group">
                 <Label className="form-label" for="choose_images">

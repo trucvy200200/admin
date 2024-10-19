@@ -1,9 +1,8 @@
 // ** React Imports
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 
 import { isObjEmpty } from "@utils"
-import { Row, Col, Button, Form, Input, Label, FormGroup, Card, FormText } from "reactstrap"
-import { useDispatch, useSelector } from "react-redux"
+import { Row, Col, Button, Form, Input, Label, FormGroup, Card } from "reactstrap"
 import { useForm, Controller } from "react-hook-form"
 import classnames from "classnames"
 import { Editor } from "react-draft-wysiwyg"
@@ -17,11 +16,50 @@ import { toast } from "react-hot-toast"
 import ErrorNotificationToast from "@src/components/Toast/ToastFail"
 import SuccessNotificationToast from "@src/components/Toast/ToastSuccess"
 import { useSearchParams, useNavigate } from "react-router-dom"
+import Select, { components } from "react-select"
+import { selectThemeColors } from "@utils"
+import { uploadImages } from "@src/redux/actions/common"
 
 import "flatpickr/dist/themes/material_blue.css"
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css"
 import "@styles/react/apps/app-users.scss"
 import "./styles.scss"
+import "@styles/react/libs/react-select/_react-select.scss"
+
+const { ValueContainer, Placeholder } = components
+
+const CustomValueContainer = ({ children, ...props }) => {
+  return (
+    <ValueContainer {...props}>
+      <Placeholder {...props} isFocused={props.isFocused}>
+        {props.selectProps.placeholder}
+      </Placeholder>
+      {React.Children.map(children, (child) => (child && child.type !== Placeholder ? child : null))}
+    </ValueContainer>
+  )
+}
+
+const filterOptions = [
+  {
+    value: "Nothern+Vietnam",
+    label: "Northern Vietnam"
+  },
+  { value: "Southern+Vietnam", label: "Southern Vietnam" },
+  { value: "Central+Vietnam", label: "Central Vietnam" }
+]
+
+const renderLocation = (location) => {
+  switch (location) {
+    case "Nothern+Vietnam":
+      return "Northern Vietnam"
+    case "Southern+Vietnam":
+      return "Southern Vietnam"
+    case "Central+Vietnam":
+      return "Central Vietnam"
+    default:
+      return "Select location"
+  }
+}
 
 const CreateTour = () => {
   const { t } = useTranslation()
@@ -38,6 +76,8 @@ const CreateTour = () => {
   const [loading, setLoading] = useState(false)
   const [errorImage, setErrorImage] = useState(false)
   const navigate = useNavigate()
+  const [location, setLocation] = useState(null)
+
   const {
     register,
     control,
@@ -86,15 +126,19 @@ const CreateTour = () => {
       const obj = {
         name: e.name,
         description: desc,
-        location: e.location,
+        location: location,
         regulation: regulation,
         address: e.address,
-        phoneContact: e.phone,
+        phone: e.phone,
         priceAdult: e.priceAdult,
         priceChild: e.priceChild,
-        durations: e.duration
+        duration: e.duration,
+        plan: plan
       }
       setLoading(true)
+      if (uploadImages.length > 0) {
+        obj.images = await uploadImages(imagesUpload)
+      }
       await createTour(
         obj,
         () => {
@@ -145,30 +189,45 @@ const CreateTour = () => {
             </Col>
             <Col md="12" lg="6">
               <FormGroup className="form-group">
-                <Label className="form-label" for="location">
+                <Label className="form-label" for="name">
                   {t("Location")} <span className="text-danger">*</span>
                 </Label>
-                <Controller
-                  name="location"
-                  id="location"
-                  control={control}
-                  defaultValue={""}
-                  render={({ field }) => {
-                    return (
-                      <Input
-                        name="location"
-                        placeholder={t("Enter location")}
-                        {...register("location", {
-                          required: true,
-                          validate: (value) => value !== ""
-                        })}
-                        className={classnames({
-                          "is-invalid": errors["location"]
-                        })}
-                        {...field}
-                      />
-                    )
+                <Select
+                  styles={{
+                    container: (provided) => ({
+                      ...provided,
+                      width: "100%",
+                      zIndex: 99991,
+                      height: "auto !important"
+                    }),
+                    valueContainer: (provided) => ({
+                      ...provided,
+                      overflow: "visible"
+                    }),
+                    placeholder: (provided, state) => ({
+                      ...provided,
+                      position: "absolute",
+                      opacity: state.hasValue || state.selectProps.inputValue ? "0" : "1",
+                      visibility: state.hasValue || state.selectProps.inputValue ? "hidden" : "visible",
+                      transition: "all 0.1s ease"
+                    }),
+                    control: (provided) => ({
+                      ...provided,
+                      height: "auto !important"
+                    })
                   }}
+                  components={{
+                    ValueContainer: CustomValueContainer
+                  }}
+                  style={{ width: "100%" }}
+                  placeholder={renderLocation(location)}
+                  theme={selectThemeColors}
+                  className="react-select"
+                  classNamePrefix="select"
+                  options={filterOptions}
+                  isClearable={false}
+                  isSearchable={false}
+                  onChange={({ value }) => setLocation(value)}
                 />
               </FormGroup>
             </Col>

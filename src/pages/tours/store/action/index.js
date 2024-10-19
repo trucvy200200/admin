@@ -38,11 +38,12 @@ export const getTourById = (id, setLoading, handleSuccess, handleError) => {
   }
 }
 
-export const getTours = (setLoading) => {
+export const getTours = (setLoading, params) => {
   return async (dispatch) => {
     setLoading(true)
     instances
-      .get(`/get-tour-by-number/`)
+      .get("/get-tour-by-number/")
+      // .get(`/tours/filter/`, {params})
       .then((response) => {
         setLoading(false)
         dispatch({
@@ -110,7 +111,7 @@ export const createTour = async (data, handleSuccess, handleError, endLoading) =
 export const updateTourStatus = async (data, handleSuccess, handleError, endLoading) => {
   try {
     await instances
-      .post(`/update-tour-status/`, data)
+      .patch(`/update-tour-status/`, data)
       .then((res) => {
         endLoading()
         if (res?.status === 200) {
@@ -122,6 +123,27 @@ export const updateTourStatus = async (data, handleSuccess, handleError, endLoad
       .catch((err) => {
         endLoading()
         handleError("Update status failed!")
+      })
+  } catch (err) {
+    endLoading()
+  }
+}
+
+export const updateTourById = async (data, handleSuccess, handleError, endLoading) => {
+  try {
+    await instances
+      .patch(`/update-tour-by-id/`, data)
+      .then((res) => {
+        endLoading()
+        if (res?.status === 200) {
+          handleSuccess("Update successfully!")
+        } else {
+          handleError("Update failed!")
+        }
+      })
+      .catch((err) => {
+        endLoading()
+        handleError("Update failed!")
       })
   } catch (err) {
     endLoading()
@@ -151,4 +173,25 @@ export const uploadImage = async (item) => {
     .then((res) => res)
     .catch(() => null)
   return res?.data?.data?.fileUrl
+}
+
+export const updateTourImageById = async (data, handleSuccess, handleError, endLoading) => {
+  try {
+    await instances
+      .patch(`/update-tour-image/`, data)
+      .then((res) => {
+        endLoading()
+        if (res?.status === 200) {
+          handleSuccess("Update successfully!")
+        } else {
+          handleError("Update failed!")
+        }
+      })
+      .catch((err) => {
+        endLoading()
+        handleError("Update failed!")
+      })
+  } catch (err) {
+    endLoading()
+  }
 }

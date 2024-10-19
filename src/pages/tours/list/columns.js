@@ -31,8 +31,8 @@ const renderStatus = (row) => {
 export const columns = ({ t, navigate, handleUpdateStatus }) => [
   {
     name: t("No."),
-    width: "50px",
-    cell: (row, index) => <div className="d-flex justify-content-left align-items-center text-primary">{index + 1}</div>
+    width: "250px",
+    cell: (row, index) => <div className="d-flex justify-content-left align-items-center text-primary">{row?.id}</div>
   },
   {
     name: t("Tour name"),
@@ -41,6 +41,16 @@ export const columns = ({ t, navigate, handleUpdateStatus }) => [
       <div className="d-flex justify-content-left align-items-center flex-column">
         <p className="w-100 mb-0 text-truncate-1">{row?.name}</p>
       </div>
+    )
+  },
+  {
+    name: t("Status"),
+    minWidth: "200px",
+    center: "true",
+    selector: (row) => (
+      <Badge className="text-capitalize" color={statusObjColor(row?.delFlg)} pill>
+        {t(renderStatus(row))}
+      </Badge>
     )
   },
   {
@@ -62,16 +72,7 @@ export const columns = ({ t, navigate, handleUpdateStatus }) => [
     minWidth: "210px",
     selector: (row) => <div className="d-flex justify-content-left align-items-center">{currencyFormat(row.priceAdult)} VND</div>
   },
-  {
-    name: t("Status"),
-    minWidth: "200px",
-    center: "true",
-    selector: (row) => (
-      <Badge className="text-capitalize" color={statusObjColor(row?.delFlg)} pill>
-        {t(renderStatus(row))}
-      </Badge>
-    )
-  },
+
   {
     name: t("Created At"),
     minWidth: "150px",

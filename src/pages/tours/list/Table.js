@@ -31,34 +31,39 @@ import "../styles/configure.scss"
 
 const { ValueContainer, Placeholder } = components
 
-const filterOptions = ({ t }) => [{ value: "", label: t("All") }]
+const filterOptions = ({ t }) => [
+  { value: "", label: t("All") },
+  { value: "0", label: t("Active") },
+  { value: "1", label: t("Inactive") }
+]
 
 const renderStatus = (value) => {
-  switch (String(value)) {
-    case "":
-      return "All"
-
+  switch (value) {
+    case 0:
+      return "Active"
+    case 1:
+      return "Inactive"
     default:
-      return "Select Status"
+      break
   }
 }
 
 // ** Table Header
-const CustomHeader = ({ navigate, t }) => {
-  // const CustomValueContainer = ({ children, ...props }) => {
-  //   return (
-  //     <ValueContainer {...props}>
-  //       <Placeholder {...props} isFocused={props.isFocused}>
-  //         {props.selectProps.placeholder}
-  //       </Placeholder>
-  //       {React.Children.map(children, (child) => (child && child.type !== Placeholder ? child : null))}
-  //     </ValueContainer>
-  //   )
-  // }
+const CustomHeader = ({ navigate, t, handleFilter, status, handleFilterStatus, searchTerm, handleSearch }) => {
+  const CustomValueContainer = ({ children, ...props }) => {
+    return (
+      <ValueContainer {...props}>
+        <Placeholder {...props} isFocused={props.isFocused}>
+          {props.selectProps.placeholder}
+        </Placeholder>
+        {React.Children.map(children, (child) => (child && child.type !== Placeholder ? child : null))}
+      </ValueContainer>
+    )
+  }
   return (
     <div className="invoice-list-table-header w-100 mb-75">
       <Row>
-        {/* <Col lg={3} sm={6} xs={12} className="modal-search-col pl-0 my-50 d-flex align-items-center justify-content-center">
+        <Col lg={3} sm={6} xs={12} className="modal-search-col pl-0 my-50 d-flex align-items-center justify-content-center">
           <InputGroup className="ml-sm-0 input-group-merge product-search w-auto input-group-custom">
             <Input
               id="search-product"
@@ -115,7 +120,7 @@ const CustomHeader = ({ navigate, t }) => {
           <Button className="button-search" color="primary" onClick={handleFilter}>
             {t("Search")}
           </Button>
-        </Col> */}
+        </Col>
         <Col lg={12} sm={6} xs={12} className="d-flex p-0 mt-1 justify-content-end">
           <div className="create-button">
             <AddNewButton onClick={() => navigate("/tours/create")} text={t("Create")} />
@@ -139,7 +144,6 @@ const Table = () => {
   // ** States
   const [status, setStatus] = useState(searchParams.get("status") ? searchParams.get("status") : "")
   const [currentPage, setCurrentPage] = useState(searchParams.get("page") ? +searchParams.get("page") : 1)
-  const [category, setCategory] = useState(searchParams.get("category") || "")
   const [searchTerm, setSearchTerm] = useState(searchParams.get("q") || "")
   const [rowsPerPage] = useState(10)
 
@@ -156,9 +160,6 @@ const Table = () => {
     if (filterParams.q) {
       params.q = filterParams.q
     }
-    if (filterParams.category) {
-      params.category = filterParams.category
-    }
 
     params.page = filterParams.page
 
@@ -173,21 +174,15 @@ const Table = () => {
       limit: rowsPerPage,
       page: page.selected + 1,
       status,
-      q: searchTerm,
-      category
+      q: searchTerm
     })
     setCurrentPage(page.selected + 1)
   }
 
   // ** Function in get data on query change
   const handleFilter = () => {
-    checkParams({ limit: rowsPerPage, page: 1, status, q: searchTerm, category })
+    checkParams({ limit: rowsPerPage, page: 1, status, q: searchTerm })
     setCurrentPage(1)
-  }
-
-  // ** Function in get data on status query change
-  const handleGetProducts = (val) => {
-    checkParams({ limit: rowsPerPage, page: currentPage, status: val, q: searchTerm, category })
   }
 
   // ** Custom Pagination
@@ -215,8 +210,8 @@ const Table = () => {
   }
   // ** Table data to render
   const dataToRender = () => {
-    if (store.tours.length > 0) {
-      return store.tours
+    if (store.tours?.length > 0) {
+      return store?.tours
     } else {
       return []
     }
@@ -227,7 +222,7 @@ const Table = () => {
     await updateTourStatus(
       {
         idTour: id,
-        status
+        status: String(status)
       },
       (message) => {
         toast.success(<SuccessNotificationToast message={message} />)
@@ -263,7 +258,9 @@ const Table = () => {
             data={dataToRender()}
             paginationComponent={CustomPagination}
             noDataComponent={<NoDataComponent message={t("No tour yet")} />}
-            subHeaderComponent={<CustomHeader navigate={navigate} t={t} />}
+            subHeaderComponent={
+              <CustomHeader navigate={navigate} t={t} handleFilter={handleFilter} status={status} handleFilterStatus={setStatus} handleSearch={setSearchTerm} searchTerm={searchTerm} />
+            }
           />
         </div>
       </Card>
