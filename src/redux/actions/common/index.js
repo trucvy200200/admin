@@ -11,16 +11,21 @@ export const uploadFile = async (file) => {
 
 export const uploadImages = async (array) => {
   const formData = new FormData()
+  let haveData = false
   array.map(async (item) => {
     if (item && typeof item !== "string") {
+      haveData = true
       formData.append("image", item)
     }
   })
-  const uploadImages = await instances.patch("/new-image", formData).then((res) => {
-    return res?.data?.data.join(",")
-  })
+  if (haveData) {
+    const uploadImages = await instances.patch("/new-image", formData).then((res) => {
+      return res?.data?.data.join(",")
+    })
+    return uploadImages
+  }
 
-  return uploadImages
+  return null
 }
 export const uploadImage = async (file) => {
   const formData = new FormData()
