@@ -32,16 +32,18 @@ import "../styles/configure.scss"
 const { ValueContainer, Placeholder } = components
 
 const filterOptions = ({ t }) => [
-  { value: "", label: t("All") },
-  { value: "0", label: t("Active") },
-  { value: "1", label: t("Inactive") }
+  { value: "all", label: t("All") },
+  { value: "active", label: t("Active") },
+  { value: "inactive", label: t("Inactive") }
 ]
 
 const renderStatus = (value) => {
   switch (value) {
-    case 0:
+    case "all":
+      return "All"
+    case "active":
       return "Active"
-    case 1:
+    case "inactive":
       return "Inactive"
     default:
       break
@@ -142,19 +144,19 @@ const Table = () => {
   const [searchParams, setSearchParams] = useSearchParams()
   const paramsURL = useParams()
   // ** States
-  const [status, setStatus] = useState(searchParams.get("status") ? searchParams.get("status") : "")
+  const [status, setStatus] = useState(searchParams.get("status") ? searchParams.get("status") : "all")
   const [currentPage, setCurrentPage] = useState(searchParams.get("page") ? +searchParams.get("page") : 1)
   const [searchTerm, setSearchTerm] = useState(searchParams.get("q") || "")
   const [rowsPerPage] = useState(10)
 
   // ** Get data on mount
   useEffect(() => {
-    dispatch(getTours(setLoading))
+    dispatch(getTours(setLoading, { status: status || null, keyword: searchTerm || null, currentPage: currentPage, perPage: rowsPerPage }))
   }, [paramsURL])
 
   const checkParams = (filterParams) => {
     const params = {}
-    if (filterParams.status) {
+    if (filterParams.status !== "all") {
       params.status = filterParams.status
     }
     if (filterParams.q) {

@@ -13,7 +13,7 @@ const tours = (state = initialState, action) => {
       return {
         ...state,
         tours: action.tours,
-        total: action.totalPages,
+        total: action.total,
         params: action.params
       }
     default:

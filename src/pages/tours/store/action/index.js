@@ -24,7 +24,7 @@ export const getTourById = (id, setLoading, handleSuccess, handleError) => {
   try {
     setLoading(true)
     instances
-      .get(`/get-tour-by-id/`, { params: { tourId: id } })
+      .get(`/get-tour-by-id`, { params: { tourId: id } })
       .then((response) => {
         setLoading(false)
         handleSuccess(response?.data?.tours)
@@ -42,20 +42,21 @@ export const getTours = (setLoading, params) => {
   return async (dispatch) => {
     setLoading(true)
     instances
-      .get("/get-tour-by-number/")
-      // .get(`/tours/filter/`, {params})
+      .get(`/tours/filter`, { params })
       .then((response) => {
         setLoading(false)
         dispatch({
           type: GET_TOURS,
-          tours: response?.data?.tours
+          tours: response?.data?.tourData?.data,
+          total: response?.data?.tourData?.total
         })
       })
       .catch(() => {
         setLoading(false)
         dispatch({
           type: GET_TOURS,
-          tours: []
+          tours: [],
+          total: 0
         })
       })
   }
@@ -132,7 +133,7 @@ export const updateTourStatus = async (data, handleSuccess, handleError, endLoad
 export const updateTourById = async (data, handleSuccess, handleError, endLoading) => {
   try {
     await instances
-      .patch(`/update-tour-by-id/`, data)
+      .patch(`/update-tour-by-id`, data)
       .then((res) => {
         endLoading()
         if (res?.status === 200) {
