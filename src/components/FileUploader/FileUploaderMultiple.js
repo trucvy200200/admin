@@ -36,7 +36,7 @@ const FileUploaderMultiple = ({ setImagesUpload, setErrorImage, imagesUpload, er
 
   const handleRemoveFile = (file) => {
     const uploadedFiles = imagesUpload
-    const filtered = uploadedFiles.filter((i) => (i?.name || i) !== (file?.name || file))
+    const filtered = uploadedFiles?.filter((i) => (i?.name || i) !== (file?.name || file))
     setImagesUpload([...filtered])
   }
 
@@ -48,7 +48,7 @@ const FileUploaderMultiple = ({ setImagesUpload, setErrorImage, imagesUpload, er
     }
   }
 
-  const fileList = imagesUpload.map((file, index) => (
+  const fileList = imagesUpload?.map((file, index) => (
     <ListGroupItem key={`${file?.name || file}-${index}`} className="d-flex align-items-center justify-content-between">
       <div className="file-details d-flex align-items-center">
         <div className="file-preview me-1">{renderFilePreview(file)}</div>

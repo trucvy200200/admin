@@ -64,31 +64,36 @@ const Login = () => {
         .then((res) => {
           /* Login condition */
           if (res?.data?.errCode === 200) {
-            const response = res?.data?.userInfo
-            localStorage.setItem(config.storageUserData, JSON.stringify({ ...response }))
-            localStorage.setItem(config.storageTokenKeyName, res?.data?.accessToken)
-            if (remember) {
-              const emailCipher = encrypt(data.email)
-              const passwordCipher = encrypt(data["login-password"])
-              localStorage.setItem(
-                config.storageUserRemember,
-                JSON.stringify({
-                  email: emailCipher,
-                  password: passwordCipher
-                })
-              )
+            if (res?.data?.userInfo?.role === "admin") {
+              const response = res?.data?.userInfo
+              localStorage.setItem(config.storageUserData, JSON.stringify({ ...response }))
+              localStorage.setItem(config.storageTokenKeyName, res?.data?.accessToken)
+              if (remember) {
+                const emailCipher = encrypt(data.email)
+                const passwordCipher = encrypt(data["login-password"])
+                localStorage.setItem(
+                  config.storageUserRemember,
+                  JSON.stringify({
+                    email: emailCipher,
+                    password: passwordCipher
+                  })
+                )
+              } else {
+                localStorage.removeItem(config.storageUserRemember)
+              }
+              setLoading(false)
+              dispatch(handleLogin(response))
+              dispatch(handleSaveDataLogin({ ...response, token: res?.data?.accessToken }))
+              navigate(getHomeRouteForLoggedInUser())
             } else {
-              localStorage.removeItem(config.storageUserRemember)
+              toast.error("Account incorrect!")
+              setLoading(false)
             }
-            setLoading(false)
-            dispatch(handleLogin(response))
-            dispatch(handleSaveDataLogin({ ...response, token: res?.data?.accessToken }))
-            navigate(getHomeRouteForLoggedInUser())
           } else {
             toast.error("Account incorrect!")
+            setLoading(false)
           }
-        }
-        )
+        })
         .catch((error) => {
           console.log(error)
           setLoading(false)

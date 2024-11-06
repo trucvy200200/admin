@@ -24,7 +24,7 @@ export const getTourById = (id, setLoading, handleSuccess, handleError) => {
   try {
     setLoading(true)
     instances
-      .get(`/get-tour-by-id`, { params: { tourId: id } })
+      .get(`/get-tour-by-id/`, { params: { tourId: id } })
       .then((response) => {
         setLoading(false)
         handleSuccess(response?.data?.tours)

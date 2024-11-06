@@ -112,9 +112,12 @@ const CreateTour = () => {
             data?.regulation ? EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(state2).contentBlocks, htmlToDraft(state2).entityMap)) : ""
           )
           setRegulation(data?.regulation)
-          const state3 = data?.plan || null
-          setEditorPlanState(data?.plan ? EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(state3).contentBlocks, htmlToDraft(state3).entityMap)) : "")
-          setPlan(data?.plan)
+          if (typeof data?.plan === "string") {
+            const state3 = data?.plan || null
+            setEditorPlanState(data?.plan ? EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(state3).contentBlocks, htmlToDraft(state3).entityMap)) : "")
+            setPlan(data?.plan)
+          }
+
           setImagesUpload(data?.images?.map((image) => image?.urlImage))
         },
         (message) => toast.error(<ErrorNotificationToast message={t(message || "Something wrong!")} />)
