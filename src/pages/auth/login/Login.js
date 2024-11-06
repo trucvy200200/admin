@@ -15,6 +15,7 @@ import { LoadingBackground } from "@src/components/Loading/LoadingBackground"
 import themeConfig from "@configs/themeConfig"
 import useJwt from "@src/auth/jwt/useJwt"
 import jwtDefaultConfig from "@src/@core/auth/jwt/jwtDefaultConfig"
+import { MdTour } from "react-icons/md"
 
 import "flatpickr/dist/themes/material_blue.css"
 
@@ -116,14 +117,14 @@ const Login = () => {
           <Card className="mb-0">
             <CardBody>
               <Link className="brand-logo" to="/" onClick={(e) => e.preventDefault()}>
-                <img src={themeConfig.app.appLogoImageSmall} width={70} alt="" />
+                <div className="d-flex gap-1 align-items-center">
+                  <MdTour size={50} className="ic-1" />
+                  <MdTour size={50} className="ic-2" />
+                </div>
                 <h2>
                   {t("Welcome to")} <span>Administration</span>
                 </h2>
               </Link>
-              <div className="intl">
-                <IntlDropdown />
-              </div>
               <Form autoComplete="off" className="auth-login-form mt-2" onSubmit={handleSubmit(onSubmit)}>
                 <FormGroup className="form-group">
                   <Label className="form-label" for="email">
@@ -153,9 +154,6 @@ const Login = () => {
                   <div className="d-flex justify-content-between">
                     <Label className="form-label" for="login-password">
                       {t("Password")} <span className="text-danger">*</span>
-                    </Label>
-                    <Label className="form-label text-right">
-                      <Link to="/forgot-password">{t("Forgot password")}?</Link>
                     </Label>
                   </div>
                   <InputPasswordToggle

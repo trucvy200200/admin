@@ -11,7 +11,13 @@ $auth-1-inner-max-width: 400px !default;
   min-height: 100vh;
   min-height: calc(var(--vh, 1vh) * 100);
   width: 100%;
-
+  .ic-2 {
+    rotate: 45deg;
+  }
+  .ic-1 {
+    rotate: 320deg;
+    transform: scale(-1, 1);
+  }
   .card-title {
     font-weight: 500;
     font-size: 25px;
