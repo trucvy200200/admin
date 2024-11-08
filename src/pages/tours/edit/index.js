@@ -171,7 +171,8 @@ const CreateTour = () => {
         phone: e.phone,
         priceAdult: e.priceAdult,
         priceChild: e.priceChild,
-        duration: e.duration
+        duration: e.duration,
+        plan: plan
       }
       setLoading(true)
       if (uploadImages.length > 0) {
