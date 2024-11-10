@@ -4,7 +4,9 @@ import { HiArrowLongLeft } from "react-icons/hi2"
 import { useTranslation } from "react-i18next"
 
 const renderCurrentPath = (pathname, t) => {
-  if (pathname.includes("/tours/edit")) {
+  if (pathname.includes("/tour-guide/edit")) {
+    return t("Edit tour guide")
+  } else if (pathname.includes("/tours/edit")) {
     return t("Edit tour")
   } else
     switch (pathname) {
@@ -16,7 +18,12 @@ const renderCurrentPath = (pathname, t) => {
         return t("Tour management")
       case "/tours/create":
         return t("Create tour")
-
+      case "/tour-guide/list":
+        return t("Tour guide management")
+      case "/tour-guide/create":
+        return t("Add tour guide")
+      case "/hotels/list":
+        return t("Hotel management")
       default:
         break
     }

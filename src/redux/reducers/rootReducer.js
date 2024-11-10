@@ -9,6 +9,7 @@ import common from "./common"
 import users from "@pages/users/store/reducer"
 import profiles from "@pages/users/profile/store/reducer"
 import tours from "@pages/tours/store/reducer"
+import hotels from "@pages/hotels/store/reducer"
 
 const rootReducer = combineReducers({
   authReducer,
@@ -17,7 +18,8 @@ const rootReducer = combineReducers({
   users,
   profiles,
   common,
-  tours
+  tours,
+  hotels
 })
 
 export default rootReducer

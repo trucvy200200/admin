@@ -75,3 +75,8 @@ export const CONTRACT_STATUS = {
   PENDING: "PENDING",
   VERIFIED: "VERIFIED"
 }
+
+export const TRANSPORTATION_TYPE = {
+  FLIGHT: "FLIGHT",
+  CAR: "CAR"
+}

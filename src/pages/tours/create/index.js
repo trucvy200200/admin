@@ -19,6 +19,8 @@ import { useSearchParams, useNavigate } from "react-router-dom"
 import Select, { components } from "react-select"
 import { selectThemeColors } from "@utils"
 import { uploadImages } from "@src/redux/actions/common"
+import Flatpickr from "react-flatpickr"
+import moment from "moment"
 
 import "flatpickr/dist/themes/material_blue.css"
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css"
@@ -77,6 +79,8 @@ const CreateTour = () => {
   const [errorImage, setErrorImage] = useState(false)
   const navigate = useNavigate()
   const [location, setLocation] = useState(null)
+  const [closeTime, setCloseTime] = useState(moment()?._d)
+  const [estimatedTime, setEstimatedTime] = useState(moment()?._d)
 
   const {
     register,
@@ -291,6 +295,124 @@ const CreateTour = () => {
             </Col>
             <Col md="12" lg="6">
               <FormGroup className="form-group">
+                <Label className="form-label" for="name">
+                  {t("Transportation")} <span className="text-danger">*</span>
+                </Label>
+                <Select
+                  styles={{
+                    container: (provided) => ({
+                      ...provided,
+                      width: "100%",
+                      zIndex: 99992,
+                      height: "auto !important"
+                    }),
+                    valueContainer: (provided) => ({
+                      ...provided,
+                      overflow: "visible"
+                    }),
+                    placeholder: (provided, state) => ({
+                      ...provided,
+                      position: "absolute",
+                      opacity: state.hasValue || state.selectProps.inputValue ? "1" : "0.4",
+                      visibility: state.hasValue || state.selectProps.inputValue ? "hidden" : "visible",
+                      transition: "all 0.1s ease"
+                    }),
+                    control: (provided) => ({
+                      ...provided,
+                      height: "auto !important"
+                    })
+                  }}
+                  components={{
+                    ValueContainer: CustomValueContainer
+                  }}
+                  style={{ width: "100%" }}
+                  // placeholder={renderLocation(location)}
+                  theme={selectThemeColors}
+                  className="react-select"
+                  classNamePrefix="select"
+                  options={filterOptions}
+                  isClearable={false}
+                  isSearchable={true}
+                  onChange={({ value }) => setLocation(value)}
+                />
+              </FormGroup>
+            </Col>
+            <Col md="12" lg="6">
+              <FormGroup className="form-group">
+                <Label className="form-label" for="name">
+                  {t("Hotel")} (optional)
+                </Label>
+                <Select
+                  styles={{
+                    container: (provided) => ({
+                      ...provided,
+                      width: "100%",
+                      zIndex: 99990,
+                      height: "auto !important"
+                    }),
+                    valueContainer: (provided) => ({
+                      ...provided,
+                      overflow: "visible"
+                    }),
+                    placeholder: (provided, state) => ({
+                      ...provided,
+                      position: "absolute",
+                      opacity: state.hasValue || state.selectProps.inputValue ? "1" : "0.4",
+                      visibility: state.hasValue || state.selectProps.inputValue ? "hidden" : "visible",
+                      transition: "all 0.1s ease"
+                    }),
+                    control: (provided) => ({
+                      ...provided,
+                      height: "auto !important"
+                    })
+                  }}
+                  components={{
+                    ValueContainer: CustomValueContainer
+                  }}
+                  style={{ width: "100%" }}
+                  // placeholder={renderLocation(location)}
+                  theme={selectThemeColors}
+                  className="react-select"
+                  classNamePrefix="select"
+                  options={filterOptions}
+                  isClearable={false}
+                  isSearchable={true}
+                  onChange={({ value }) => setLocation(value)}
+                />
+              </FormGroup>
+            </Col>
+            <Col md="12" lg={6} className="edit_col">
+              <FormGroup className="form-group">
+                <Label className={"label"}>
+                  Estimated Departure Time <span className="text-danger">*</span>
+                </Label>
+                <Flatpickr
+                  options={{ disableMobile: true, locale: t("localeFlat") === "vn" && viLocale, dateFormat: "d/m/Y", minDate: new Date(), defaultDate: moment()?._d }}
+                  id="estimatedTime"
+                  className={classnames({ "estimatedTime form-control": true, "is-invalid": !estimatedTime })}
+                  onChange={(_, date) => {
+                    setEstimatedTime(date)
+                  }}
+                />
+              </FormGroup>
+            </Col>
+            <Col md="12" lg={6} className="edit_col">
+              <FormGroup className="form-group">
+                <Label className={"label"}>
+                  Close Order Time <span className="text-danger">*</span>
+                </Label>
+                <Flatpickr
+                  options={{ disableMobile: true, locale: t("localeFlat") === "vn" && viLocale, dateFormat: "d/m/Y", minDate: new Date(), defaultDate: moment()?._d }}
+                  id="closeTime"
+                  className={classnames({ "closeTime form-control": true, "is-invalid": !closeTime })}
+                  onChange={(_, date) => {
+                    setCloseTime(date)
+                  }}
+                />
+              </FormGroup>
+            </Col>
+            <Col md="12" lg="6">
+              <FormGroup className="form-group">
                 <Label className="form-label" for="priceChild">
                   {t("Child price")} <span className="text-danger">*</span>
                 </Label>
@@ -383,6 +505,38 @@ const CreateTour = () => {
                   }}
                 />
                 <p>Minimum 1 day</p>
+              </FormGroup>
+            </Col>
+            <Col md="12" lg="6">
+              <FormGroup className="form-group">
+                <Label className="form-label" for="duration">
+                  {t("Slot limit")} <span className="text-danger">*</span>
+                </Label>
+                <Controller
+                  name="limit"
+                  id="limit"
+                  control={control}
+                  defaultValue={""}
+                  render={({ field }) => {
+                    return (
+                      <Input
+                        name="limit"
+                        type="number"
+                        placeholder={t("Enter limit")}
+                        {...register("limit", {
+                          required: true,
+                          validate: (value) => value !== "",
+                          min: 1
+                        })}
+                        className={classnames({
+                          "is-invalid": errors["limit"]
+                        })}
+                        {...field}
+                      />
+                    )
+                  }}
+                />
+                <p>Minimum 1</p>
               </FormGroup>
             </Col>
             <Col md="12">
