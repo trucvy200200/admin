@@ -21,6 +21,8 @@ import { selectThemeColors } from "@utils"
 import { uploadImages } from "@src/redux/actions/common"
 import Flatpickr from "react-flatpickr"
 import moment from "moment"
+import Cleave from "cleave.js/react"
+import { stringToDate } from "@src/utility/ConvertDate"
 
 import "flatpickr/dist/themes/material_blue.css"
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css"
@@ -81,6 +83,9 @@ const CreateTour = () => {
   const [location, setLocation] = useState(null)
   const [closeTime, setCloseTime] = useState(moment()?._d)
   const [estimatedTime, setEstimatedTime] = useState(moment()?._d)
+  const [transportation, setTransportation] = useState(null)
+  const [hotel, setHotel] = useState(null)
+  const [numberErrors, setNumberErrors] = useState(null)
 
   const {
     register,
@@ -88,6 +93,7 @@ const CreateTour = () => {
     formState: { errors },
     handleSubmit,
     reset,
+    getValues,
     setValue
   } = useForm()
 
@@ -127,6 +133,8 @@ const CreateTour = () => {
   const onSubmit = async (e) => {
     if (loading) return
     if (isObjEmpty(errors)) {
+      if (!transportation) return toast.error(<ErrorNotificationToast message={t("Vehicle is required!")} />)
+      if (new Date(closeTime) >= new Date(estimatedTime)) return toast.error(<ErrorNotificationToast message={t("Estimated departure time must be greater than close order time!")} />)
       const obj = {
         name: e.name,
         description: desc,
@@ -137,7 +145,12 @@ const CreateTour = () => {
         priceAdult: e.priceAdult,
         priceChild: e.priceChild,
         duration: e.duration,
-        plan: plan
+        plan: plan,
+        transportationId: transportation,
+        hotelId: hotel || null,
+        estimatedTime: stringToDate(estimatedTime, "dd/MM/yyyy", "/"),
+        closeOrderTime: stringToDate(closeTime, "dd/MM/yyyy", "/"),
+        limit: e.limit
       }
       setLoading(true)
       if (uploadImages.length > 0) {
@@ -333,7 +346,7 @@ const CreateTour = () => {
                   options={filterOptions}
                   isClearable={false}
                   isSearchable={true}
-                  onChange={({ value }) => setLocation(value)}
+                  onChange={({ value }) => setTransportation(value)}
                 />
               </FormGroup>
             </Col>
@@ -377,7 +390,7 @@ const CreateTour = () => {
                   options={filterOptions}
                   isClearable={false}
                   isSearchable={true}
-                  onChange={({ value }) => setLocation(value)}
+                  onChange={({ value }) => setHotel(value)}
                 />
               </FormGroup>
             </Col>
@@ -387,7 +400,7 @@ const CreateTour = () => {
                   Estimated Departure Time <span className="text-danger">*</span>
                 </Label>
                 <Flatpickr
-                  options={{ disableMobile: true, locale: t("localeFlat") === "vn" && viLocale, dateFormat: "d/m/Y", minDate: new Date(), defaultDate: moment()?._d }}
+                  options={{ disableMobile: true, dateFormat: "d/m/Y", minDate: new Date(), defaultDate: moment()?._d }}
                   id="estimatedTime"
                   className={classnames({ "estimatedTime form-control": true, "is-invalid": !estimatedTime })}
                   onChange={(_, date) => {
@@ -402,7 +415,7 @@ const CreateTour = () => {
                   Close Order Time <span className="text-danger">*</span>
                 </Label>
                 <Flatpickr
-                  options={{ disableMobile: true, locale: t("localeFlat") === "vn" && viLocale, dateFormat: "d/m/Y", minDate: new Date(), defaultDate: moment()?._d }}
+                  options={{ disableMobile: true, dateFormat: "d/m/Y", minDate: new Date(), defaultDate: moment()?._d }}
                   id="closeTime"
                   className={classnames({ "closeTime form-control": true, "is-invalid": !closeTime })}
                   onChange={(_, date) => {
@@ -414,65 +427,55 @@ const CreateTour = () => {
             <Col md="12" lg="6">
               <FormGroup className="form-group">
                 <Label className="form-label" for="priceChild">
-                  {t("Child price")} <span className="text-danger">*</span>
+                  {t("Child price")} (VND)<span className="text-danger">*</span>
                 </Label>
-                <Controller
-                  name="priceChild"
-                  id="priceChild"
-                  control={control}
-                  defaultValue={""}
-                  render={({ field }) => {
-                    return (
-                      <Input
-                        type="number"
-                        name="priceChild"
-                        placeholder={t("Enter price")}
-                        {...register("priceChild", {
-                          required: true,
-                          validate: (value) => value !== "",
-                          min: 10000
-                        })}
-                        className={classnames({
-                          "is-invalid": errors["priceChild"]
-                        })}
-                        {...field}
-                      />
-                    )
+                <Cleave
+                  placeholder={t("Enter price")}
+                  className={classnames(
+                    {
+                      "is-invalid": errors["priceChild"]
+                    },
+                    "form-control"
+                  )}
+                  options={{ numeral: true, numeralThousandsGroupStyle: "thousand" }}
+                  onChange={(e) => {
+                    setValue("priceChild", e.target.rawValue)
+                    if (numberErrors?.priceChild) {
+                      setNumberErrors({ ...numberErrors, priceChild: null })
+                      setError("priceChild", null)
+                    }
                   }}
+                  value={getValues("priceChild")}
+                  id="price"
                 />
-                <p>Minimum 10,000 VND</p>
+                <small>Minimum 10.000</small>
               </FormGroup>
             </Col>
             <Col md="12" lg="6">
               <FormGroup className="form-group">
                 <Label className="form-label" for="priceAdult">
-                  {t("Adult price")} <span className="text-danger">*</span>
+                  {t("Adult price")} (VND)<span className="text-danger">*</span>
                 </Label>
-                <Controller
-                  name="priceAdult"
-                  id="priceAdult"
-                  control={control}
-                  defaultValue={""}
-                  render={({ field }) => {
-                    return (
-                      <Input
-                        type="number"
-                        name="priceAdult"
-                        placeholder={t("Enter price")}
-                        {...register("priceAdult", {
-                          required: true,
-                          validate: (value) => value !== "",
-                          min: 10000
-                        })}
-                        className={classnames({
-                          "is-invalid": errors["priceAdult"]
-                        })}
-                        {...field}
-                      />
-                    )
+                <Cleave
+                  placeholder={t("Enter price")}
+                  className={classnames(
+                    {
+                      "is-invalid": errors["priceAdult"]
+                    },
+                    "form-control"
+                  )}
+                  options={{ numeral: true, numeralThousandsGroupStyle: "thousand" }}
+                  onChange={(e) => {
+                    setValue("priceAdult", e.target.rawValue)
+                    if (numberErrors?.priceAdult) {
+                      setNumberErrors({ ...numberErrors, priceAdult: null })
+                      setError("priceAdult", null)
+                    }
                   }}
+                  value={getValues("priceAdult")}
+                  id="price"
                 />
-                <p>Minimum 10,000 VND</p>
+                <small>Minimum 10.000</small>
               </FormGroup>
             </Col>
             <Col md="12" lg="6">

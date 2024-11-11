@@ -118,21 +118,21 @@ export const formatTimeAgo = (input) => {
 
 export const renderTimeCallAPI = (value, isEnd) => {
   if (!value) return null
-  const timeData = new Date().getTimezoneOffset() / (-60)
-  const newTime = timeData >= 0 ? timeData : (-1 * timeData)
+  const timeData = new Date().getTimezoneOffset() / -60
+  const newTime = timeData >= 0 ? timeData : -1 * timeData
   const now = new Date(0, 0)
   now.setMinutes(+Math.round(newTime * 60))
   const hours = now.getHours()
   const minutes = now.getMinutes()
 
   const time = `${hours >= 10 ? hours : `0${hours}`}:${minutes >= 10 ? minutes : `0${minutes}`}`
-  return `${value}${isEnd ? 'T23:59:59' : 'T00:00:00'}${timeData >= 0 ? "+" : "-"}${time}`
+  return `${value}${isEnd ? "T23:59:59" : "T00:00:00"}${timeData >= 0 ? "+" : "-"}${time}`
 }
 
 export const renderDateTimeCallAPI = (date, time) => {
   if (!date) return null
-  const timeData = new Date().getTimezoneOffset() / (-60)
-  const newTime = timeData >= 0 ? timeData : (-1 * timeData)
+  const timeData = new Date().getTimezoneOffset() / -60
+  const newTime = timeData >= 0 ? timeData : -1 * timeData
   const now = new Date(0, 0)
   now.setMinutes(+Math.round(newTime * 60))
   const hours = now.getHours()
@@ -143,12 +143,12 @@ export const renderDateTimeCallAPI = (date, time) => {
 }
 
 export const renderTimeNoTimezoneCallAPI = (value, isEnd) => {
-  return value ? `${value}${isEnd ? 'T23:59:59' : 'T00:00:00'}` : null
+  return value ? `${value}${isEnd ? "T23:59:59" : "T00:00:00"}` : null
 }
 
 export const convertNewDateFilter = (value) => {
-  if (!value || value === '') return
-  const data = value.split('-')
+  if (!value || value === "") return
+  const data = value.split("-")
   return new Date(`${data[0]}-${data[1]}-${data[2]}`)
 }
 
@@ -164,4 +164,17 @@ export const convertDateTimeString = (value) => {
 export const disabledDate = (current) => {
   // Can not select days before today
   return current && current < moment(moment().format("YYYY-MM-DD HH:mm"), "YYYY-MM-DD HH:mm")
+}
+
+export const stringToDate = (_date, _format, _delimiter) => {
+  var formatLowerCase = _format.toLowerCase()
+  var formatItems = formatLowerCase.split(_delimiter)
+  var dateItems = _date.split(_delimiter)
+  var monthIndex = formatItems.indexOf("mm")
+  var dayIndex = formatItems.indexOf("dd")
+  var yearIndex = formatItems.indexOf("yyyy")
+  var month = parseInt(dateItems[monthIndex])
+  month -= 1
+  var formatedDate = new Date(dateItems[yearIndex], month, dateItems[dayIndex])
+  return formatedDate
 }

@@ -28,7 +28,7 @@ const renderStatus = (row) => {
       break
   }
 }
-export const columns = ({ t, navigate, handleUpdateStatus }) => [
+export const columns = ({ t, navigate, handleDeleteTour }) => [
   {
     name: t("No."),
     width: "250px",
@@ -42,6 +42,20 @@ export const columns = ({ t, navigate, handleUpdateStatus }) => [
         <p className="w-100 mb-0 text-truncate-1">{row?.name}</p>
       </div>
     )
+  },
+  {
+    name: t("Buy slot"),
+    width: "120px",
+    cell: (row) => (
+      <div className="d-flex justify-content-left align-items-center flex-column">
+        <p className="w-100 mb-0 text-truncate-1">{row?.buySlot || 0}</p>
+      </div>
+    )
+  },
+  {
+    name: t("Slot limit"),
+    minWidth: "120px",
+    selector: (row) => row?.limit || 0
   },
   {
     name: t("Status"),
@@ -72,12 +86,6 @@ export const columns = ({ t, navigate, handleUpdateStatus }) => [
     minWidth: "210px",
     selector: (row) => <div className="d-flex justify-content-left align-items-center">{currencyFormat(row.priceAdult)} VND</div>
   },
-
-  {
-    name: t("Created At"),
-    minWidth: "150px",
-    selector: (row) => convertTimeDate(row?.createdAt)
-  },
   {
     name: (
       <div>
@@ -94,18 +102,12 @@ export const columns = ({ t, navigate, handleUpdateStatus }) => [
             <MoreVertical size={16} className="cursor-pointer" />
           </DropdownToggle>
           <DropdownMenu container="root">
-            {row?.delFlg === 1 ? (
-              <DropdownItem className="w-100" onClick={() => handleUpdateStatus(row?.id, 0)}>
+            {(row?.delFlg === 1 || !row?.buySlot) && (
+              <DropdownItem className="w-100" onClick={() => handleDeleteTour({ status: true, id: row?.id })}>
                 <Check size={16} className="mr-50" />
-                <span className="align-middle">{t("Active")}</span>
-              </DropdownItem>
-            ) : (
-              <DropdownItem className="w-100" onClick={() => handleUpdateStatus(row?.id, 1)}>
-                <X size={16} className="mr-50" />
-                <span className="align-middle">{t("Inactive")}</span>
+                <span className="align-middle">{t("Remove")}</span>
               </DropdownItem>
             )}
-
             <DropdownItem className="w-100" onClick={() => navigate(`/tours/edit/${row?.id}`)}>
               <Edit size={16} className="mr-50" />
               <span className="align-middle">{t("Edit")}</span>

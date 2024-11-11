@@ -2,23 +2,26 @@ import instances, { instancesV4 } from "@src/@core/plugin/axios"
 
 export const GET_TOURS = "GET_TOURS"
 
-// export const getProductsReviewTotal = () => {
-//   return async (dispatch) => {
-//     await instances.get("/owner/product/review/total")
-//       .then((response) => {
-//         dispatch({
-//           type: GET_PRODUCTS_REVIEW_TOTAL,
-//           total: response?.data?.data
-//         })
-//       })
-//       .catch(() => {
-//         dispatch({
-//           type: GET_PRODUCTS_REVIEW_TOTAL,
-//           total: 0
-//         })
-//       })
-//   }
-// }
+export const deleteTour = async (data, handleSuccess, handleError, endLoading) => {
+  try {
+    await instances
+      .delete(`/tours/remove`, { data })
+      .then((res) => {
+        endLoading()
+        if (res?.status === 200) {
+          handleSuccess("Delete successfully!")
+        } else {
+          handleError("Delete failed!")
+        }
+      })
+      .catch((err) => {
+        endLoading()
+        handleError("Delete failed!")
+      })
+  } catch (err) {
+    endLoading()
+  }
+}
 
 export const getTourById = (id, setLoading, handleSuccess, handleError) => {
   try {

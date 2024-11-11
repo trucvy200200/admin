@@ -14,15 +14,15 @@ import { Row, Col, Card, InputGroup, Input, Button } from "reactstrap"
 import { NoDataComponent } from "@src/components/NoDataComponent"
 import { useParams, useSearchParams, useNavigate } from "react-router-dom"
 import { selectThemeColors } from "@utils"
-import { getTours, updateTourStatus } from "../store/action"
+import { getTours, deleteTour } from "../store/action"
 import { useTranslation } from "react-i18next"
 import { LoadingBackground } from "@src/components/Loading/LoadingBackground"
 import Spinner from "@src/@core/components/spinner/Loading-spinner-table"
 import { toast } from "react-hot-toast"
 import SuccessNotificationToast from "@src/components/Toast/ToastSuccess"
 import ErrorNotificationToast from "@src/components/Toast/ToastFail"
-import { LANGUAGES } from "@constants/base-constant"
 import AddNewButton from "@src/components/Buttons/AddNewButton"
+import { ConfirmDelete } from "@src/components/ConfirmDelete"
 
 // ** Styles
 import "@styles/react/libs/react-select/_react-select.scss"
@@ -137,9 +137,8 @@ const Table = () => {
   // ** Store Vars
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const [loading, setLoading] = useState(false)
-  const [pending, setPending] = useState(false)
   const store = useSelector((state) => state.tours)
   const [searchParams, setSearchParams] = useSearchParams()
   const paramsURL = useParams()
@@ -148,11 +147,16 @@ const Table = () => {
   const [currentPage, setCurrentPage] = useState(searchParams.get("page") ? +searchParams.get("page") : 1)
   const [searchTerm, setSearchTerm] = useState(searchParams.get("q") || "")
   const [rowsPerPage] = useState(10)
+  const [showDelete, setShowDelete] = useState({ status: false, id: null })
 
   // ** Get data on mount
   useEffect(() => {
-    dispatch(getTours(setLoading, { status: status || null, keyword: searchTerm || null, currentPage: currentPage, perPage: rowsPerPage }))
+    handleGetData()
   }, [paramsURL])
+
+  const handleGetData = () => {
+    dispatch(getTours(setLoading, { status: status || null, keyword: searchTerm || null, currentPage: currentPage, perPage: rowsPerPage }))
+  }
 
   const checkParams = (filterParams) => {
     const params = {}
@@ -219,16 +223,16 @@ const Table = () => {
     }
   }
 
-  const handleUpdateStatus = async (id, status) => {
+  const handleDeleteHotel = async () => {
     setLoading(true)
-    await updateTourStatus(
+    await deleteTour(
       {
-        idTour: id,
-        status: String(status)
+        tourId: showDelete?.id
       },
       (message) => {
         toast.success(<SuccessNotificationToast message={message} />)
-        dispatch(getTours(setLoading))
+        handleGetData()
+        setShowDelete({ status: false, id: null })
       },
       (message) => toast.error(<ErrorNotificationToast message={message} />),
       () => setLoading(false)
@@ -237,7 +241,7 @@ const Table = () => {
 
   return (
     <>
-      {pending && <LoadingBackground />}
+      {loading && <LoadingBackground />}
       <Card>
         <div className="product-wrapper overflow-auto table-responsive sticky-actions">
           <DataTable
@@ -253,7 +257,7 @@ const Table = () => {
             columns={columns({
               t,
               navigate,
-              handleUpdateStatus
+              handleDeleteTour: setShowDelete
             })}
             sortIcon={<ChevronDown />}
             className="react-dataTable no-padding"
@@ -266,6 +270,7 @@ const Table = () => {
           />
         </div>
       </Card>
+      {showDelete?.status && <ConfirmDelete message={"Confirm to delete tour"} button={"Delete"} submit={handleDeleteHotel} cancel={() => setShowDelete({ status: false, id: null })} />}
     </>
   )
 }

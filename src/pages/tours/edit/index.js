@@ -21,6 +21,11 @@ import draftToHtml from "draftjs-to-html"
 import Select, { components } from "react-select"
 import { selectThemeColors } from "@utils"
 import { uploadImages } from "@src/redux/actions/common"
+import moment from "moment"
+import Flatpickr from "react-flatpickr"
+import Cleave from "cleave.js/react"
+import { stringToDate } from "@src/utility/ConvertDate"
+import { getHotels } from "@src/pages/hotels/store/action"
 
 import "flatpickr/dist/themes/material_blue.css"
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css"
@@ -82,14 +87,25 @@ const CreateTour = () => {
   const store = useSelector((state) => state.tours.detail)
   const dispatch = useDispatch()
   const [location, setLocation] = useState(null)
+  const [closeTime, setCloseTime] = useState(moment()?._d)
+  const [estimatedTime, setEstimatedTime] = useState(moment()?._d)
+  const [transportation, setTransportation] = useState(null)
+  const [hotel, setHotel] = useState(null)
+  const [numberErrors, setNumberErrors] = useState(null)
+  const hotels = useSelector((state) => state.hotels.hotels)
 
   const {
     register,
     control,
     formState: { errors },
     handleSubmit,
-    setValue
+    setValue,
+    getValues
   } = useForm()
+
+  useEffect(() => {
+    dispatch(getHotels(setLoading, {}))
+  }, [])
 
   useEffect(() => {
     if (id) {
@@ -105,6 +121,11 @@ const CreateTour = () => {
           setValue("priceChild", data?.priceChild)
           setValue("duration", data?.duration)
           setDesc(data?.description)
+          setEstimatedTime(data?.estimatedTime)
+          setCloseTime(data?.closeOrderTime)
+          setValue("limit", data?.limit)
+          setTransportation(data?.transportationId)
+          setHotel(data?.hotelId)
           const state = data?.description || null
           setEditorState(data?.description ? EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(state).contentBlocks, htmlToDraft(state).entityMap)) : "")
           const state2 = data?.regulation || null
@@ -172,7 +193,12 @@ const CreateTour = () => {
         priceAdult: e.priceAdult,
         priceChild: e.priceChild,
         duration: e.duration,
-        plan: plan
+        plan: plan,
+        transportationId: transportation,
+        hotelId: hotel || null,
+        estimatedTime: stringToDate(estimatedTime, "dd/MM/yyyy", "/"),
+        closeOrderTime: stringToDate(closeTime, "dd/MM/yyyy", "/"),
+        limit: e.limit
       }
       setLoading(true)
       if (uploadImages.length > 0) {
@@ -188,7 +214,7 @@ const CreateTour = () => {
       )
     }
   }
-
+  console.log(hotel)
   return (
     <>
       {loading && <LoadingBackground />}
@@ -328,66 +354,176 @@ const CreateTour = () => {
             </Col>
             <Col md="12" lg="6">
               <FormGroup className="form-group">
-                <Label className="form-label" for="priceChild">
-                  {t("Child price")} <span className="text-danger">*</span>
+                <Label className="form-label" for="name">
+                  {t("Transportation")} <span className="text-danger">*</span>
                 </Label>
-                <Controller
-                  name="priceChild"
-                  id="priceChild"
-                  control={control}
-                  defaultValue={""}
-                  render={({ field }) => {
-                    return (
-                      <Input
-                        type="number"
-                        name="priceChild"
-                        placeholder={t("Enter price")}
-                        {...register("priceChild", {
-                          required: true,
-                          validate: (value) => value !== "",
-                          min: 10000
-                        })}
-                        className={classnames({
-                          "is-invalid": errors["priceChild"]
-                        })}
-                        {...field}
-                      />
-                    )
+                <Select
+                  styles={{
+                    container: (provided) => ({
+                      ...provided,
+                      width: "100%",
+                      zIndex: 99992,
+                      height: "auto !important"
+                    }),
+                    valueContainer: (provided) => ({
+                      ...provided,
+                      overflow: "visible"
+                    }),
+                    placeholder: (provided, state) => ({
+                      ...provided,
+                      position: "absolute",
+                      opacity: state.hasValue || state.selectProps.inputValue ? "1" : "0.4",
+                      visibility: state.hasValue || state.selectProps.inputValue ? "hidden" : "visible",
+                      transition: "all 0.1s ease"
+                    }),
+                    control: (provided) => ({
+                      ...provided,
+                      height: "auto !important"
+                    })
+                  }}
+                  components={{
+                    ValueContainer: CustomValueContainer
+                  }}
+                  style={{ width: "100%" }}
+                  // placeholder={renderLocation(location)}
+                  theme={selectThemeColors}
+                  className="react-select"
+                  classNamePrefix="select"
+                  options={filterOptions}
+                  isClearable={false}
+                  isSearchable={true}
+                  onChange={({ value }) => setTransportation(value)}
+                />
+              </FormGroup>
+            </Col>
+            <Col md="12" lg="6">
+              <FormGroup className="form-group">
+                <Label className="form-label" for="name">
+                  {t("Hotel")} (optional)
+                </Label>
+                <Select
+                  styles={{
+                    container: (provided) => ({
+                      ...provided,
+                      width: "100%",
+                      zIndex: 99990,
+                      height: "auto !important"
+                    }),
+                    valueContainer: (provided) => ({
+                      ...provided,
+                      overflow: "visible"
+                    }),
+                    placeholder: (provided, state) => ({
+                      ...provided,
+                      position: "absolute",
+                      opacity: state.hasValue || state.selectProps.inputValue ? "1" : "0.4",
+                      visibility: state.hasValue || state.selectProps.inputValue ? "hidden" : "visible",
+                      transition: "all 0.1s ease"
+                    }),
+                    control: (provided) => ({
+                      ...provided,
+                      height: "auto !important"
+                    })
+                  }}
+                  components={{
+                    ValueContainer: CustomValueContainer
+                  }}
+                  style={{ width: "100%" }}
+                  placeholder={hotels.find((item) => item.id === hotel) ? hotels.find((item) => item.id === hotel).hotelName : "Select..."}
+                  theme={selectThemeColors}
+                  className="react-select"
+                  classNamePrefix="select"
+                  options={hotels.map((item) => ({ label: `${item.id} - ${item.hotelName}`, value: item.id }))}
+                  isClearable={false}
+                  isSearchable={true}
+                  onChange={({ value }) => setHotel(value)}
+                />
+              </FormGroup>
+            </Col>
+            <Col md="12" lg={6} className="edit_col">
+              <FormGroup className="form-group">
+                <Label className={"label"}>
+                  Estimated Departure Time <span className="text-danger">*</span>
+                </Label>
+                <Flatpickr
+                  options={{ disableMobile: true, dateFormat: "d/m/Y", minDate: new Date(), defaultDate: moment()?._d }}
+                  id="estimatedTime"
+                  value={estimatedTime}
+                  className={classnames({ "estimatedTime form-control": true, "is-invalid": !estimatedTime })}
+                  onChange={(_, date) => {
+                    setEstimatedTime(date)
                   }}
                 />
-                <p>Minimum 10,000 VND</p>
+              </FormGroup>
+            </Col>
+            <Col md="12" lg={6} className="edit_col">
+              <FormGroup className="form-group">
+                <Label className={"label"}>
+                  Close Order Time <span className="text-danger">*</span>
+                </Label>
+                <Flatpickr
+                  options={{ disableMobile: true, dateFormat: "d/m/Y", minDate: new Date(), defaultDate: moment()?._d }}
+                  id="closeTime"
+                  value={closeTime}
+                  className={classnames({ "closeTime form-control": true, "is-invalid": !closeTime })}
+                  onChange={(_, date) => {
+                    setCloseTime(date)
+                  }}
+                />
+              </FormGroup>
+            </Col>
+            <Col md="12" lg="6">
+              <FormGroup className="form-group">
+                <Label className="form-label" for="priceChild">
+                  {t("Child price")} (VND)<span className="text-danger">*</span>
+                </Label>
+                <Cleave
+                  placeholder={t("Enter price")}
+                  className={classnames(
+                    {
+                      "is-invalid": errors["priceChild"]
+                    },
+                    "form-control"
+                  )}
+                  options={{ numeral: true, numeralThousandsGroupStyle: "thousand" }}
+                  onChange={(e) => {
+                    setValue("priceChild", e.target.rawValue)
+                    if (numberErrors?.priceChild) {
+                      setNumberErrors({ ...numberErrors, priceChild: null })
+                      setError("priceChild", null)
+                    }
+                  }}
+                  value={getValues("priceChild")}
+                  id="price"
+                />
+                <small>Minimum 10.000</small>
               </FormGroup>
             </Col>
             <Col md="12" lg="6">
               <FormGroup className="form-group">
                 <Label className="form-label" for="priceAdult">
-                  {t("Adult price")} <span className="text-danger">*</span>
+                  {t("Adult price")} (VND) <span className="text-danger">*</span>
                 </Label>
-                <Controller
-                  name="priceAdult"
-                  id="priceAdult"
-                  control={control}
-                  defaultValue={""}
-                  render={({ field }) => {
-                    return (
-                      <Input
-                        type="number"
-                        name="priceAdult"
-                        placeholder={t("Enter price")}
-                        {...register("priceAdult", {
-                          required: true,
-                          validate: (value) => value !== "",
-                          min: 10000
-                        })}
-                        className={classnames({
-                          "is-invalid": errors["priceAdult"]
-                        })}
-                        {...field}
-                      />
-                    )
+                <Cleave
+                  placeholder={t("Enter price")}
+                  className={classnames(
+                    {
+                      "is-invalid": errors["priceAdult"]
+                    },
+                    "form-control"
+                  )}
+                  options={{ numeral: true, numeralThousandsGroupStyle: "thousand" }}
+                  onChange={(e) => {
+                    setValue("priceAdult", e.target.rawValue)
+                    if (numberErrors?.priceAdult) {
+                      setNumberErrors({ ...numberErrors, priceAdult: null })
+                      setError("priceAdult", null)
+                    }
                   }}
+                  value={getValues("priceAdult")}
+                  id="price"
                 />
-                <p>Minimum 10,000 VND</p>
+                <small>Minimum 10.000</small>
               </FormGroup>
             </Col>
             <Col md="12" lg="6">
