@@ -214,7 +214,7 @@ const CreateTour = () => {
       )
     }
   }
-  console.log(hotel)
+
   return (
     <>
       {loading && <LoadingBackground />}
