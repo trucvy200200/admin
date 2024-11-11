@@ -558,6 +558,38 @@ const CreateTour = () => {
                 <p>Minimum 1 day</p>
               </FormGroup>
             </Col>
+            <Col md="12" lg="6">
+              <FormGroup className="form-group">
+                <Label className="form-label" for="duration">
+                  {t("Slot limit")} <span className="text-danger">*</span>
+                </Label>
+                <Controller
+                  name="limit"
+                  id="limit"
+                  control={control}
+                  defaultValue={""}
+                  render={({ field }) => {
+                    return (
+                      <Input
+                        name="limit"
+                        type="number"
+                        placeholder={t("Enter limit")}
+                        {...register("limit", {
+                          required: true,
+                          validate: (value) => value !== "",
+                          min: 1
+                        })}
+                        className={classnames({
+                          "is-invalid": errors["limit"]
+                        })}
+                        {...field}
+                      />
+                    )
+                  }}
+                />
+                <p>Minimum 1</p>
+              </FormGroup>
+            </Col>
             <Col md="12">
               <FormGroup className="form-group">
                 <Label className="form-label" for="desc">
