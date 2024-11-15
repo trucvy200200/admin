@@ -54,7 +54,6 @@ const Edit = ({ data, t, handleNoButton, handleGetUpdateData }) => {
   }, [])
 
   const onSubmit = async (e) => {
-    console.log(1)
     if (loading) return
     if (isObjEmpty(errors)) {
       const obj = {

@@ -24,6 +24,10 @@ const renderCurrentPath = (pathname, t) => {
         return t("Add tour guide")
       case "/hotels/list":
         return t("Hotel management")
+      case "/vehicles/list":
+        return t("Vehicle management")
+      case "/incoming-tours":
+        return t("Incoming tours")
       default:
         break
     }

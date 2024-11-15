@@ -1,6 +1,7 @@
 import instances, { instancesV4 } from "@src/@core/plugin/axios"
 
 export const GET_TOURS = "GET_TOURS"
+export const GET_INCOMING_TOURS = "GET_INCOMING_TOURS"
 
 export const deleteTour = async (data, handleSuccess, handleError, endLoading) => {
   try {
@@ -61,29 +62,6 @@ export const getTours = (setLoading, params) => {
           tours: [],
           total: 0
         })
-      })
-  }
-}
-
-export const changeStatusTour = (tour, notification, toggleLoading, getReviews) => {
-  return async (dispatch) => {
-    const { id } = tour
-    toggleLoading(true)
-    await instances
-      .put(`/review/${id}`, { displayFlag: !reviewData?.displayFlag })
-      .then((res) => {
-        if (!res.data.error) {
-          toggleLoading(false)
-          notification.toast.success(notification.success("Update review successfully!"))
-          getReviews()
-        } else {
-          toggleLoading(false)
-          notification.toast.error(notification.error(res.data.meta.messages))
-        }
-      })
-      .catch((err) => {
-        toggleLoading(false)
-        notification.toast.error(notification.error("Update review failed!"))
       })
   }
 }
@@ -197,5 +175,29 @@ export const updateTourImageById = async (data, handleSuccess, handleError, endL
       })
   } catch (err) {
     endLoading()
+  }
+}
+
+export const getIncomingTours = (setLoading, params) => {
+  return async (dispatch) => {
+    setLoading(true)
+    instances
+      .get(`/incoming-tours`, { params })
+      .then((response) => {
+        setLoading(false)
+        dispatch({
+          type: GET_INCOMING_TOURS,
+          tours: response?.data?.data,
+          total: response?.data?.total
+        })
+      })
+      .catch(() => {
+        setLoading(false)
+        dispatch({
+          type: GET_INCOMING_TOURS,
+          tours: [],
+          total: 0
+        })
+      })
   }
 }

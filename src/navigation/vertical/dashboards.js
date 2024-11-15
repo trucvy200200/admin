@@ -40,12 +40,21 @@ export default [
     action: "view",
     resource: "tour_management"
   },
+  // {
+  //   id: "order-management",
+  //   title: "Orders",
+  //   icon: <RiBillLine size={20} />,
+  //   badge: "light-warning",
+  //   navLink: "/orders/list",
+  //   action: "view",
+  //   resource: "tour_management"
+  // },
   {
-    id: "order-management",
-    title: "Orders",
+    id: "incoming-tours",
+    title: "Incoming tours",
     icon: <RiBillLine size={20} />,
     badge: "light-warning",
-    navLink: "/orders/list",
+    navLink: "/incoming-tours",
     action: "view",
     resource: "tour_management"
   }

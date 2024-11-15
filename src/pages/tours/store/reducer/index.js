@@ -1,10 +1,11 @@
-import { GET_TOURS } from "../action"
+import { GET_TOURS, GET_INCOMING_TOURS } from "../action"
 
 // ** Initial State
 const initialState = {
   tours: [],
   total: 0,
-  params: {}
+  params: {},
+  incomingTours: []
 }
 
 const tours = (state = initialState, action) => {
@@ -13,6 +14,13 @@ const tours = (state = initialState, action) => {
       return {
         ...state,
         tours: action.tours,
+        total: action.total,
+        params: action.params
+      }
+    case GET_INCOMING_TOURS:
+      return {
+        ...state,
+        incomingTours: action.tours,
         total: action.total,
         params: action.params
       }

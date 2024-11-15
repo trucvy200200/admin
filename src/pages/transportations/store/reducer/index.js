@@ -1,18 +1,18 @@
-import { GET_TOURS } from "../action"
+import { GET_VEHICLES } from "../action"
 
 // ** Initial State
 const initialState = {
-  tours: [],
+  vehicles: [],
   total: 0,
   params: {}
 }
 
-const tours = (state = initialState, action) => {
+const vehicles = (state = initialState, action) => {
   switch (action.type) {
-    case GET_TOURS:
+    case GET_VEHICLES:
       return {
         ...state,
-        tours: action.tours,
+        vehicles: action.vehicles,
         total: action.total,
         params: action.params
       }
@@ -20,4 +20,4 @@ const tours = (state = initialState, action) => {
       return { ...state }
   }
 }
-export default tours
+export default vehicles

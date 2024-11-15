@@ -9,26 +9,51 @@ import ErrorNotificationToast from "@src/components/Toast/ToastFail"
 import SuccessNotificationToast from "@src/components/Toast/ToastSuccess"
 import { useForm, Controller } from "react-hook-form"
 import { LoadingBackground } from "@src/components/Loading/LoadingBackground"
-import { DragDrop } from "@uppy/react"
-import Uppy from "@uppy/core"
-import thumbnailGenerator from "@uppy/thumbnail-generator"
-import classnames from "classnames"
-import { Editor } from "react-draft-wysiwyg"
-import { EditorState, ContentState, convertToRaw } from "draft-js"
-import htmlToDraft from "html-to-draftjs"
-import draftToHtml from "draftjs-to-html"
 import Cleave from "cleave.js/react"
-// import { updateTour } from "../../store/action"
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css"
+import { updateVehicleById } from "../../store/action"
+import Select, { components } from "react-select"
+import { TRANSPORTATION_TYPE } from "@constants/base-constant"
+import { selectThemeColors } from "@utils"
+import classnames from "classnames"
+import { set } from "date-fns"
+
+const { ValueContainer, Placeholder } = components
+
+const CustomValueContainer = ({ children, ...props }) => {
+  return (
+    <ValueContainer {...props}>
+      <Placeholder {...props} isFocused={props.isFocused}>
+        {props.selectProps.placeholder}
+      </Placeholder>
+      {React.Children.map(children, (child) => (child && child.type !== Placeholder ? child : null))}
+    </ValueContainer>
+  )
+}
+
+const renderType = (type) => {
+  switch (type) {
+    case TRANSPORTATION_TYPE.FLIGHT:
+      return "Flight"
+    case TRANSPORTATION_TYPE.CAR:
+      return "Car"
+    default:
+      return "Select vehicle type"
+  }
+}
+
+const filterOptions = [
+  {
+    value: TRANSPORTATION_TYPE.FLIGHT,
+    label: "Flight"
+  },
+  { value: TRANSPORTATION_TYPE.CAR, label: "Car" }
+]
 
 const Edit = ({ data, t, handleNoButton, handleGetUpdateData }) => {
   // ** States
   const [loading, setLoading] = useState(false)
-  const [editorState, setEditorState] = useState(null)
-  const [desc, setDesc] = useState(null)
-  const descEditorRef = React.useRef(null)
-  const [image, setImage] = useState({})
   const [numberErrors, setNumberErrors] = useState(null)
+  const [type, setType] = useState(null)
   const {
     setError,
     setValue,
@@ -41,120 +66,67 @@ const Edit = ({ data, t, handleNoButton, handleGetUpdateData }) => {
   } = useForm()
 
   useEffect(() => {
-    if (data?.description) {
-      setDesc(data?.description ? data?.description : "")
-      const state = data?.description || null
-      setEditorState(data?.description ? EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(state).contentBlocks, htmlToDraft(state).entityMap)) : "")
-      descEditorRef.current = document.querySelector("#Desc .descEditor")
-    }
     if (data?.id) {
-      setValue("price", data.price)
-      setValue("minimumUserIncome", data.minimumUserIncome)
-      setImage({ image_url: data.imageUrl })
+      setValue("price", data?.price)
+      setValue("brand", data?.transportName)
+      setType(data?.type)
+      setValue("departure", data?.departure)
+      setValue("destination", data?.destination)
+      setValue("company", data?.comany)
     }
   }, [])
 
-  const renderPreview = () => {
-    return (
-      <div className="icon_details_header">
-        <div className={"add-image__item-container icon-avatar"}>
-          <div className="image-wrapper">
-            {image?.image_url && (
-              <img
-                className={`add-image__item-image ${image?.image_url && image?.image_url.includes("http") ? "" : "default"}`}
-                src={image?.image_url && image?.image_url.includes("http") ? image?.image_url : ""}
-                alt="icon picture"
-              />
-            )}
-          </div>
-          <div className="actions-wrapper">
-            <div className="buttons">
-              <div className={"icon-upload-image"}>
-                {t("Upload")}
-                <div className="uppy-wrapper">
-                  <DragDrop uppy={uppy} />
-                </div>
-              </div>
-            </div>
-            <div className="noti">{t("Allowed JPG, GIF or PNG. Max size of 800K")}</div>
-          </div>
-        </div>
-      </div>
-    )
-  }
-  const uppy = new Uppy({
-    meta: { type: "avatar" },
-    autoProceed: true,
-    restrictions: { allowedFileTypes: ["image/*"] }
-  })
-
-  uppy.use(thumbnailGenerator)
-  uppy.on("thumbnail:generated", (file, preview) => {
-    setImage({ image_url: preview, image_file: file.data })
-  })
-
-  const onSubmit = async (values) => {
+  const onSubmit = async (e) => {
+    if (loading) return
     if (isObjEmpty(errors)) {
-      if (!values.price) {
-        setError("price", t("Price is required!"))
-        return
+      const obj = {
+        id: data.id,
+        transportName: e.name,
+        company: e.company,
+        type,
+        departure: e.departure,
+        destination: e.destination,
+        price: e.price
       }
-      const inputData = {}
-      inputData.name = values.prodName || null
-      inputData.price = values.price
-      inputData.description = desc || null
-      inputData.minimumUserIncome = values.minimumUserIncome || 0
-      inputData.imageUrl = image?.image_url
-
-      // await updateCryptoProduct(
-      //   data.id,
-      //   inputData,
-      //   setLoading,
-      //   () => {
-      //     toast.success(<SuccessNotificationToast message={t("Update successfully!")} />)
-      //     reset()
-      //     handleGetUpdateData()
-      //     handleNoButton()
-      //   },
-      //   () => toast.error(<ErrorNotificationToast message={t("Update failed")} />)
-      // )
+      setLoading(true)
+      await updateVehicleById(
+        obj,
+        () => {
+          toast.success(<SuccessNotificationToast message={t("Update vehicle successfully!")} />)
+          handleGetUpdateData()
+          handleNoButton()
+          reset()
+        },
+        (message) => toast.error(<ErrorNotificationToast message={t(message || "Update vehicle failed!")} />),
+        () => setLoading(false)
+      )
     }
-  }
-
-  const onEditorStateChange = (e) => {
-    if (!e.getCurrentContent().getPlainText()) {
-      setDesc(" ")
-    } else {
-      const html = draftToHtml(convertToRaw(e.getCurrentContent())).toString()
-      setDesc(html ? html : " ")
-    }
-    setEditorState(e)
   }
 
   return (
     <>
       {loading && <LoadingBackground />}
-      <Form onSubmit={handleSubmit(onSubmit)} className="mt-2" autoComplete={"off"}>
-        <FormGroup className="form-group">{renderPreview()}</FormGroup>
+      <Form onSubmit={handleSubmit(onSubmit)} autoComplete={"off"}>
+        <h3>Edit vehicle</h3>
         <FormGroup className="form-group">
           <Label className="form-label" for="prod_name">
-            {t("Product name")} <span className="text-danger">*</span>
+            Brand <span className="text-danger">*</span>
           </Label>
           <Controller
-            id="prodName"
-            name="prodName"
+            id="brand"
+            name="brand"
             control={control}
-            defaultValue={data?.name || ""}
+            defaultValue={data?.comany || ""}
             render={({ field }) => {
               return (
                 <Input
                   type="text"
-                  placeholder={t("Product name")}
-                  name="prodName"
+                  placeholder={t("Brand name")}
+                  name="brand"
                   className={classnames({
-                    "is-invalid": errors["prodName"]
+                    "is-invalid": errors["brand"]
                   })}
-                  {...register("prodName", {
+                  {...register("brand", {
                     required: true,
                     validate: (value) => value !== ""
                   })}
@@ -165,36 +137,109 @@ const Edit = ({ data, t, handleNoButton, handleGetUpdateData }) => {
           />
         </FormGroup>
         <FormGroup className="form-group">
-          <Label className="form-label" for="minimumUserIncome">
-            {t("Participation condition")} <span className="text-danger">*</span>
+          <Label className="form-label" for="name">
+            {t("Type")} <span className="text-danger">*</span>
           </Label>
-          <Cleave
-            className={classnames(
-              {
-                "is-invalid": errors["minimumUserIncome"]
-              },
-              "form-control"
-            )}
-            placeholder={t("Participation condition")}
-            options={{ numeral: true, numeralThousandsGroupStyle: "thousand" }}
-            onChange={(e) => {
-              setValue("minimumUserIncome", e.target.rawValue)
-              if (numberErrors?.minimumUserIncome) {
-                setNumberErrors({ ...numberErrors, minimumUserIncome: null })
-                setError("minimumUserIncome", null)
-              }
+          <Select
+            styles={{
+              container: (provided) => ({
+                ...provided,
+                width: "100%",
+                zIndex: 99991,
+                height: "auto !important"
+              }),
+              valueContainer: (provided) => ({
+                ...provided,
+                overflow: "visible"
+              }),
+              placeholder: (provided, state) => ({
+                ...provided,
+                position: "absolute",
+                opacity: state.hasValue || state.selectProps.inputValue ? "0" : "1",
+                visibility: state.hasValue || state.selectProps.inputValue ? "hidden" : "visible",
+                transition: "all 0.1s ease"
+              }),
+              control: (provided) => ({
+                ...provided,
+                height: "auto !important"
+              })
             }}
-            value={getValues("minimumUserIncome")}
-            id="minimumUserIncome"
+            components={{
+              ValueContainer: CustomValueContainer
+            }}
+            style={{ width: "100%" }}
+            placeholder={renderType(type)}
+            theme={selectThemeColors}
+            className="react-select"
+            classNamePrefix="select"
+            options={filterOptions}
+            isClearable={false}
+            isSearchable={false}
+            onChange={({ value }) => setType(value)}
           />
-          <small>{t("Minimum")} 0</small>
+        </FormGroup>
+        <FormGroup className="form-group">
+          <Label className="form-label" for="prod_name">
+            Departure <span className="text-danger">*</span>
+          </Label>
+          <Controller
+            id="departure"
+            name="departure"
+            control={control}
+            defaultValue={data?.departure || ""}
+            render={({ field }) => {
+              return (
+                <Input
+                  type="text"
+                  placeholder={t("Departure")}
+                  name="departure"
+                  className={classnames({
+                    "is-invalid": errors["departure"]
+                  })}
+                  {...register("departure", {
+                    required: true,
+                    validate: (value) => value !== ""
+                  })}
+                  {...field}
+                />
+              )
+            }}
+          />
+        </FormGroup>
+        <FormGroup className="form-group">
+          <Label className="form-label" for="prod_name">
+            Destination <span className="text-danger">*</span>
+          </Label>
+          <Controller
+            id="destination"
+            name="destination"
+            control={control}
+            defaultValue={data?.destination || ""}
+            render={({ field }) => {
+              return (
+                <Input
+                  type="text"
+                  placeholder={t("Destination")}
+                  name="destination"
+                  className={classnames({
+                    "is-invalid": errors["destination"]
+                  })}
+                  {...register("destination", {
+                    required: true,
+                    validate: (value) => value !== ""
+                  })}
+                  {...field}
+                />
+              )
+            }}
+          />
         </FormGroup>
         <FormGroup className="form-group">
           <Label className="form-label" for="price">
-            {t("Service price by month")} <span className="text-danger">*</span>
+            {t("Price")} (VND) <span className="text-danger">*</span>
           </Label>
           <Cleave
-            placeholder={t("Service price by month")}
+            placeholder={t("Enter price")}
             className={classnames(
               {
                 "is-invalid": errors["price"]
@@ -210,18 +255,9 @@ const Edit = ({ data, t, handleNoButton, handleGetUpdateData }) => {
               }
             }}
             value={getValues("price")}
-            disabled={+data?.totalRegister > 0}
             id="price"
           />
-          <small>{t("Minimum 1")}</small>
-        </FormGroup>
-        <FormGroup className="bottom-form form-group">
-          <Label className=" form-label" for="image_url">
-            {t("Product description")}
-          </Label>
-          <div id="Desc">
-            <Editor editorState={editorState} toolbarClassName="descToolbar" wrapperClassName="descWrapper" editorClassName="descEditor" onEditorStateChange={onEditorStateChange} />
-          </div>
+          <small>{t("Minimum 10.000")}</small>
         </FormGroup>
         <div className="d-flex align-items-center justify-content-end">
           <Button.Ripple className="mr-1" type="submit" color="primary">

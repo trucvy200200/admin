@@ -10,11 +10,8 @@ import SuccessNotificationToast from "@src/components/Toast/ToastSuccess"
 import { useForm, Controller } from "react-hook-form"
 import { LoadingBackground } from "@src/components/Loading/LoadingBackground"
 import classnames from "classnames"
-import { Editor } from "react-draft-wysiwyg"
-import { EditorState, convertToRaw } from "draft-js"
-import draftToHtml from "draftjs-to-html"
 import Cleave from "cleave.js/react"
-import { createTour } from "../../store/action"
+import { createVehicle } from "../../store/action"
 import Select, { components } from "react-select"
 import { TRANSPORTATION_TYPE } from "@constants/base-constant"
 import { selectThemeColors } from "@utils"
@@ -57,10 +54,6 @@ const filterOptions = [
 const Create = ({ handleGetData, t, handleNoButton }) => {
   // ** States
   const [loading, setLoading] = useState(false)
-  const [editorState, setEditorState] = useState(EditorState.createEmpty())
-  const [desc, setDesc] = useState(null)
-  const descEditorRef = React.useRef(null)
-  const [image, setImage] = useState(null)
   const [numberErrors, setNumberErrors] = useState(null)
   const [type, setType] = useState(null)
   const {
@@ -71,48 +64,33 @@ const Create = ({ handleGetData, t, handleNoButton }) => {
     getValues,
     formState: { errors },
     handleSubmit,
-    reset,
-    clearErrors
+    reset
   } = useForm()
 
-  const onSubmit = async (values) => {
+  const onSubmit = async (e) => {
+    if (loading) return
     if (isObjEmpty(errors)) {
-      if (!values.price) {
-        setError("price", t("Price is required!"))
-        return
+      const obj = {
+        transportName: e.brand,
+        company: e.company,
+        type,
+        departure: e.departure,
+        destination: e.destination,
+        price: e.price
       }
-      if (!values.minimumUserIncome) {
-        setError("minimumUserIncome", t("Condition is required!"))
-        return
-      }
-      const inputData = {}
-      inputData.name = values.prodName || null
-      inputData.price = values.price
-      inputData.description = desc || null
-      inputData.minimumUserIncome = values.minimumUserIncome || 0
-      inputData.imageUrl = ""
-      // await createCryptoProduct(
-      //   inputData,
-      //   setLoading,
-      //   () => {
-      //     toast.success(<SuccessNotificationToast message={t("Create successfully!")} />)
-      //     reset()
-      //     handleGetData()
-      //     handleNoButton()
-      //   },
-      //   () => toast.error(<ErrorNotificationToast message={t("Create failed!")} />)
-      // )
+      setLoading(true)
+      await createVehicle(
+        obj,
+        () => {
+          toast.success(<SuccessNotificationToast message={t("Create vehicle successfully!")} />)
+          handleGetData()
+          handleNoButton()
+          reset()
+        },
+        (message) => toast.error(<ErrorNotificationToast message={t(message || "Create vehicle failed!")} />),
+        () => setLoading(false)
+      )
     }
-  }
-
-  const onEditorStateChange = (e) => {
-    if (!e.getCurrentContent().getPlainText()) {
-      setDesc(" ")
-    } else {
-      const html = draftToHtml(convertToRaw(e.getCurrentContent())).toString()
-      setDesc(html ? html : " ")
-    }
-    setEditorState(e)
   }
 
   return (
@@ -122,7 +100,7 @@ const Create = ({ handleGetData, t, handleNoButton }) => {
         <h3>Create vehicle</h3>
         <FormGroup className="form-group">
           <Label className="form-label" for="prod_name">
-            Brand <span className="text-danger">*</span>
+            Name <span className="text-danger">*</span>
           </Label>
           <Controller
             id="brand"
@@ -149,8 +127,36 @@ const Create = ({ handleGetData, t, handleNoButton }) => {
           />
         </FormGroup>
         <FormGroup className="form-group">
+          <Label className="form-label" for="prod_name">
+            Company <span className="text-danger">*</span>
+          </Label>
+          <Controller
+            id="company"
+            name="company"
+            control={control}
+            defaultValue=""
+            render={({ field }) => {
+              return (
+                <Input
+                  type="text"
+                  placeholder={t("Company name")}
+                  name="company"
+                  className={classnames({
+                    "is-invalid": errors["company"]
+                  })}
+                  {...register("company", {
+                    required: true,
+                    validate: (value) => value !== ""
+                  })}
+                  {...field}
+                />
+              )
+            }}
+          />
+        </FormGroup>
+        <FormGroup className="form-group">
           <Label className="form-label" for="name">
-            {t("Location")} <span className="text-danger">*</span>
+            {t("Type")} <span className="text-danger">*</span>
           </Label>
           <Select
             styles={{

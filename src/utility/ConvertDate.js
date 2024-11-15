@@ -1,7 +1,7 @@
 import moment from "moment"
 
 export const convertDateString = (value) => {
-  return moment(value).format("DD-MM-YYYY")
+  return moment(value).format("DD/MM/YYYY")
 }
 export const convertDate = (value) => {
   return moment(value?.toString()).format("DD-MM-YYYY")
