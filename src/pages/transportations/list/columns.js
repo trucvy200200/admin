@@ -24,11 +24,20 @@ export const columns = ({ t, handleEditVehicle, handleDeleteVehicle }) => [
     cell: (row, index) => <div className="d-flex justify-content-left align-items-center text-primary">{row?.id}</div>
   },
   {
-    name: t("Brand name"),
+    name: t("Vehicle name"),
     width: "200px",
     cell: (row) => (
       <div className="d-flex justify-content-left align-items-center flex-column">
-        <p className="w-100 mb-0 text-truncate-1">{row?.company}</p>
+        <p className="w-100 mb-0 text-truncate-1">{row?.transportName || "---"}</p>
+      </div>
+    )
+  },
+  {
+    name: t("Company"),
+    width: "200px",
+    cell: (row) => (
+      <div className="d-flex justify-content-left align-items-center flex-column">
+        <p className="w-100 mb-0 text-truncate-1">{row?.company || "---"}</p>
       </div>
     )
   },
