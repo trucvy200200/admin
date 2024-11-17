@@ -23,6 +23,10 @@ import Flatpickr from "react-flatpickr"
 import moment from "moment"
 import Cleave from "cleave.js/react"
 import { stringToDate } from "@src/utility/ConvertDate"
+import { getHotels } from "@src/pages/hotels/store/action"
+import { getVehicles } from "@src/pages/transportations/store/action"
+import { useDispatch, useSelector } from "react-redux"
+import { useEffect } from "react"
 
 import "flatpickr/dist/themes/material_blue.css"
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css"
@@ -86,6 +90,9 @@ const CreateTour = () => {
   const [transportation, setTransportation] = useState(null)
   const [hotel, setHotel] = useState(null)
   const [numberErrors, setNumberErrors] = useState(null)
+  const hotels = useSelector((state) => state.hotels.hotels)
+  const vehicles = useSelector((state) => state.vehicles.vehicles)
+  const dispatch = useDispatch()
 
   const {
     register,
@@ -96,6 +103,11 @@ const CreateTour = () => {
     getValues,
     setValue
   } = useForm()
+
+  useEffect(() => {
+    dispatch(getHotels(setLoading, {}))
+    dispatch(getVehicles(setLoading, {}))
+  }, [])
 
   const onEditorStateChange = (e) => {
     if (!e.getCurrentContent().getPlainText()) {
@@ -309,7 +321,7 @@ const CreateTour = () => {
             <Col md="12" lg="6">
               <FormGroup className="form-group">
                 <Label className="form-label" for="name">
-                  {t("Transportation")} <span className="text-danger">*</span>
+                  Vehicle <span className="text-danger">*</span>
                 </Label>
                 <Select
                   styles={{
@@ -343,7 +355,7 @@ const CreateTour = () => {
                   theme={selectThemeColors}
                   className="react-select"
                   classNamePrefix="select"
-                  options={filterOptions}
+                  options={vehicles?.map((item) => ({ label: `${item.id} - ${item.transportName}`, value: item.id }))}
                   isClearable={false}
                   isSearchable={true}
                   onChange={({ value }) => setTransportation(value)}
@@ -387,7 +399,7 @@ const CreateTour = () => {
                   theme={selectThemeColors}
                   className="react-select"
                   classNamePrefix="select"
-                  options={filterOptions}
+                  options={hotels?.map((item) => ({ label: `${item.id} - ${item.hotelName}`, value: item.id }))}
                   isClearable={false}
                   isSearchable={true}
                   onChange={({ value }) => setHotel(value)}

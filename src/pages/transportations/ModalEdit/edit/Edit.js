@@ -67,12 +67,13 @@ const Edit = ({ data, t, handleNoButton, handleGetUpdateData }) => {
 
   useEffect(() => {
     if (data?.id) {
+      console.log(data)
       setValue("price", data?.price)
       setValue("brand", data?.transportName)
       setType(data?.type)
       setValue("departure", data?.departure)
       setValue("destination", data?.destination)
-      setValue("company", data?.comany)
+      setValue("company", data?.company)
     }
   }, [])
 
@@ -81,7 +82,7 @@ const Edit = ({ data, t, handleNoButton, handleGetUpdateData }) => {
     if (isObjEmpty(errors)) {
       const obj = {
         id: data.id,
-        transportName: e.name,
+        transportName: e.brand,
         company: e.company,
         type,
         departure: e.departure,
@@ -116,7 +117,7 @@ const Edit = ({ data, t, handleNoButton, handleGetUpdateData }) => {
             id="brand"
             name="brand"
             control={control}
-            defaultValue={data?.comany || ""}
+            defaultValue={data?.transportName || ""}
             render={({ field }) => {
               return (
                 <Input
@@ -127,6 +128,34 @@ const Edit = ({ data, t, handleNoButton, handleGetUpdateData }) => {
                     "is-invalid": errors["brand"]
                   })}
                   {...register("brand", {
+                    required: true,
+                    validate: (value) => value !== ""
+                  })}
+                  {...field}
+                />
+              )
+            }}
+          />
+        </FormGroup>
+        <FormGroup className="form-group">
+          <Label className="form-label" for="prod_name">
+            Company <span className="text-danger">*</span>
+          </Label>
+          <Controller
+            id="company"
+            name="company"
+            control={control}
+            defaultValue={data?.company || ""}
+            render={({ field }) => {
+              return (
+                <Input
+                  type="text"
+                  placeholder={t("Company name")}
+                  name="company"
+                  className={classnames({
+                    "is-invalid": errors["company"]
+                  })}
+                  {...register("company", {
                     required: true,
                     validate: (value) => value !== ""
                   })}

@@ -26,6 +26,7 @@ import Flatpickr from "react-flatpickr"
 import Cleave from "cleave.js/react"
 import { stringToDate } from "@src/utility/ConvertDate"
 import { getHotels } from "@src/pages/hotels/store/action"
+import { getVehicles } from "@src/pages/transportations/store/action"
 
 import "flatpickr/dist/themes/material_blue.css"
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css"
@@ -93,6 +94,7 @@ const CreateTour = () => {
   const [hotel, setHotel] = useState(null)
   const [numberErrors, setNumberErrors] = useState(null)
   const hotels = useSelector((state) => state.hotels.hotels)
+  const vehicles = useSelector((state) => state.vehicles.vehicles)
 
   const {
     register,
@@ -105,6 +107,7 @@ const CreateTour = () => {
 
   useEffect(() => {
     dispatch(getHotels(setLoading, {}))
+    dispatch(getVehicles(setLoading, {}))
   }, [])
 
   useEffect(() => {
@@ -355,7 +358,7 @@ const CreateTour = () => {
             <Col md="12" lg="6">
               <FormGroup className="form-group">
                 <Label className="form-label" for="name">
-                  {t("Transportation")} <span className="text-danger">*</span>
+                  Vehicle <span className="text-danger">*</span>
                 </Label>
                 <Select
                   styles={{
@@ -385,11 +388,11 @@ const CreateTour = () => {
                     ValueContainer: CustomValueContainer
                   }}
                   style={{ width: "100%" }}
-                  // placeholder={renderLocation(location)}
+                  placeholder={vehicles.find((item) => item.id === transportation) ? vehicles.find((item) => item.id === transportation).transportName : "Select..."}
                   theme={selectThemeColors}
                   className="react-select"
                   classNamePrefix="select"
-                  options={filterOptions}
+                  options={vehicles.map((item) => ({ label: `${item.id} - ${item.transportName}`, value: item.id }))}
                   isClearable={false}
                   isSearchable={true}
                   onChange={({ value }) => setTransportation(value)}
