@@ -201,3 +201,24 @@ export const getIncomingTours = (setLoading, params) => {
       })
   }
 }
+
+export const approveIncomingTour = async (data, handleSuccess, handleError, endLoading) => {
+  try {
+    await instances
+      .post(`/incoming-tours/accept`, data)
+      .then((res) => {
+        endLoading()
+        if (res?.status === 200) {
+          handleSuccess("Approve successfully!")
+        } else {
+          handleError("Approve failed!")
+        }
+      })
+      .catch((err) => {
+        endLoading()
+        handleError("Approve failed!")
+      })
+  } catch (err) {
+    endLoading()
+  }
+}

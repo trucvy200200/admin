@@ -7,26 +7,26 @@ import { FiSettings } from "react-icons/fi"
 
 const statusObjColor = (status) => {
   switch (status) {
-    case 0:
-      return "light-success"
     case 1:
+      return "light-success"
+    case 0:
       return "light-warning"
     default:
-      break
+      return "light-warning"
   }
 }
 
 const renderStatus = (row) => {
-  switch (row?.delFlg) {
-    case 0:
-      return "Active"
+  switch (row?.isApprove) {
     case 1:
-      return "Inactive"
+      return "Approved"
+    case 0:
+      return "Pending"
     default:
-      break
+      return "Pending"
   }
 }
-export const columns = ({ t, navigate, handleDeleteTour }) => [
+export const columns = ({ t, navigate, handleDeleteTour, handleApproveTour }) => [
   {
     name: t("No."),
     width: "250px",
@@ -60,7 +60,7 @@ export const columns = ({ t, navigate, handleDeleteTour }) => [
     minWidth: "200px",
     center: "true",
     selector: (row) => (
-      <Badge className="text-capitalize" color={statusObjColor(row?.delFlg)} pill>
+      <Badge className="text-capitalize" color={statusObjColor(row?.isApprove)} pill>
         {t(renderStatus(row))}
       </Badge>
     )
@@ -91,7 +91,12 @@ export const columns = ({ t, navigate, handleDeleteTour }) => [
           </DropdownToggle>
           <DropdownMenu container="root">
             {(row?.delFlg === 1 || !row?.buySlot) && (
-              <DropdownItem className="w-100" onClick={() => {}}>
+              <DropdownItem
+                className="w-100"
+                onClick={() => {
+                  handleApproveTour({ status: true, id: row?.id })
+                }}
+              >
                 <Check size={16} className="mr-50" />
                 <span className="align-middle">{t("Approve")}</span>
               </DropdownItem>

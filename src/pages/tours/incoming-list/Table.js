@@ -14,7 +14,7 @@ import { Row, Col, Card, InputGroup, Input, Button } from "reactstrap"
 import { NoDataComponent } from "@src/components/NoDataComponent"
 import { useParams, useSearchParams, useNavigate } from "react-router-dom"
 import { selectThemeColors } from "@utils"
-import { getIncomingTours, deleteTour } from "../store/action"
+import { getIncomingTours, approveIncomingTour } from "../store/action"
 import { useTranslation } from "react-i18next"
 import { LoadingBackground } from "@src/components/Loading/LoadingBackground"
 import Spinner from "@src/@core/components/spinner/Loading-spinner-table"
@@ -23,6 +23,7 @@ import SuccessNotificationToast from "@src/components/Toast/ToastSuccess"
 import ErrorNotificationToast from "@src/components/Toast/ToastFail"
 import AddNewButton from "@src/components/Buttons/AddNewButton"
 import { ConfirmDelete } from "@src/components/ConfirmDelete"
+import { ConfirmApprove } from "@src/components/ConfirmApprove"
 
 // ** Styles
 import "@styles/react/libs/react-select/_react-select.scss"
@@ -148,6 +149,7 @@ const Table = () => {
   const [searchTerm, setSearchTerm] = useState(searchParams.get("q") || "")
   const [rowsPerPage] = useState(10)
   const [showDelete, setShowDelete] = useState({ status: false, id: null })
+  const [showApprove, setShowApprove] = useState({ status: false, id: null })
 
   // ** Get data on mount
   useEffect(() => {
@@ -223,6 +225,22 @@ const Table = () => {
     }
   }
 
+  const handleApproveTour = async () => {
+    setLoading(true)
+    await approveIncomingTour(
+      {
+        tourId: showApprove?.id
+      },
+      (message) => {
+        toast.success(<SuccessNotificationToast message={message} />)
+        handleGetData()
+        setShowApprove({ status: false, id: null })
+      },
+      (message) => toast.error(<ErrorNotificationToast message={message} />),
+      () => setLoading(false)
+    )
+  }
+
   return (
     <>
       {loading && <LoadingBackground />}
@@ -241,7 +259,8 @@ const Table = () => {
             columns={columns({
               t,
               navigate,
-              handleDeleteTour: setShowDelete
+              handleDeleteTour: setShowDelete,
+              handleApproveTour: setShowApprove
             })}
             sortIcon={<ChevronDown />}
             className="react-dataTable no-padding"
@@ -255,6 +274,9 @@ const Table = () => {
         </div>
       </Card>
       {/* {showDelete?.status && <ConfirmDelete message={"Confirm to delete tour"} button={"Delete"} submit={handleDeleteTour} cancel={() => setShowDelete({ status: false, id: null })} />} */}
+      {showApprove?.status && (
+        <ConfirmApprove message={"Confirm to approve tour"} button={"Approve"} submit={handleApproveTour} cancel={() => setShowApprove({ status: false, id: null })} />
+      )}
     </>
   )
 }
