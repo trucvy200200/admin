@@ -49,7 +49,7 @@ const CustomValueContainer = ({ children, ...props }) => {
 
 const filterOptions = [
   {
-    value: "Nothern Vietnam",
+    value: "Northern Vietnam",
     label: "Northern Vietnam"
   },
   { value: "Southern Vietnam", label: "Southern Vietnam" },
@@ -58,7 +58,7 @@ const filterOptions = [
 
 const renderLocation = (location) => {
   switch (location) {
-    case "Nothern Vietnam":
+    case "Northern Vietnam":
       return "Northern Vietnam"
     case "Southern Vietnam":
       return "Southern Vietnam"
