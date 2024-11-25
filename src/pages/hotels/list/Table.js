@@ -88,7 +88,7 @@ const Table = () => {
   }, [paramsURL])
 
   const handleGetData = () => {
-    dispatch(getHotels(setLoading, { location: searchTerm || null }))
+    dispatch(getHotels(setLoading, { location: searchTerm || null, currentPage, perPage: rowsPerPage }))
   }
 
   const checkParams = (filterParams) => {

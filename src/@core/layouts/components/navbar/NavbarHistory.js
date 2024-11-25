@@ -28,6 +28,10 @@ const renderCurrentPath = (pathname, t) => {
         return t("Vehicle management")
       case "/incoming-tours":
         return t("Incoming tours")
+      case "/orders/list":
+        return t("Order list")
+      case "/refunds/list":
+        return t("Refund list")
       default:
         break
     }

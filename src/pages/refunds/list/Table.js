@@ -9,50 +9,55 @@ import { useDispatch, useSelector } from "react-redux"
 import ReactPaginate from "react-paginate"
 import { ChevronDown } from "react-feather"
 import DataTable from "react-data-table-component"
-import Select, { components } from "react-select"
-import { Row, Col, Card, InputGroup, Input, Button } from "reactstrap"
+import { Row, Col, Card, InputGroup, Input, Button, Label, FormGroup } from "reactstrap"
 import { NoDataComponent } from "@src/components/NoDataComponent"
 import { useParams, useSearchParams, useNavigate } from "react-router-dom"
-import { selectThemeColors } from "@utils"
-import { getIncomingTours, approveIncomingTour, rejectIncomingTour } from "../store/action"
+import { getRefunds, updateStatusRefund } from "../store/action"
 import { useTranslation } from "react-i18next"
 import { LoadingBackground } from "@src/components/Loading/LoadingBackground"
 import Spinner from "@src/@core/components/spinner/Loading-spinner-table"
+// import ModalDetail from "../ModalDetail/list"
+import Select, { components } from "react-select"
+import { selectThemeColors } from "@utils"
+import { PAYMENT_STATUS, ORDER_STATUS } from "@constants/base-constant"
+import { ConfirmApprove } from "@src/components/ConfirmApprove"
 import { toast } from "react-hot-toast"
 import SuccessNotificationToast from "@src/components/Toast/ToastSuccess"
 import ErrorNotificationToast from "@src/components/Toast/ToastFail"
-import AddNewButton from "@src/components/Buttons/AddNewButton"
-import { ConfirmDelete } from "@src/components/ConfirmDelete"
-import { ConfirmApprove } from "@src/components/ConfirmApprove"
 
 // ** Styles
 import "@styles/react/libs/react-select/_react-select.scss"
 import "@styles/react/libs/tables/react-dataTable-component.scss"
 import "../styles/configure.scss"
 
+// ** Table Header
 const { ValueContainer, Placeholder } = components
 
-const filterOptions = ({ t }) => [
-  { value: "all", label: t("All") },
-  { value: "active", label: t("Active") },
-  { value: "inactive", label: t("Inactive") }
+const filterOrderOptions = () => [
+  { value: "all", label: "All" },
+  { value: ORDER_STATUS.REFUND_COMPLETED, label: "Refund completed" },
+  { value: ORDER_STATUS.COMPLETED, label: "Completed" },
+  { value: ORDER_STATUS.CANCELLED, label: "Cancelled by customer" },
+  { value: ORDER_STATUS.CANCELLED_BY_ADMIN, label: "Cancelled by admin" }
 ]
 
-const renderStatus = (value) => {
+const renderOrderStatus = (value) => {
   switch (value) {
     case "all":
       return "All"
-    case "active":
-      return "Active"
-    case "inactive":
-      return "Inactive"
+    case ORDER_STATUS.REFUND_COMPLETED:
+      return "Refund completed"
+    case ORDER_STATUS.CANCELLED:
+      return "Cancelled by customer"
+    case PAYMENT_STATUS.COMPLETED:
+      return "Completed"
+    case ORDER_STATUS.CANCELLED_BY_ADMIN:
+      return "Cancelled by admin"
     default:
       break
   }
 }
-
-// ** Table Header
-const CustomHeader = ({ navigate, t, handleFilter, status, handleFilterStatus, searchTerm, handleSearch }) => {
+const CustomHeader = ({ t, handleFilter, searchTerm, handleSearch, paymentStatus, handleFilterPaymentStatus, orderStatus, handleFilterOrderStatus }) => {
   const CustomValueContainer = ({ children, ...props }) => {
     return (
       <ValueContainer {...props}>
@@ -63,10 +68,11 @@ const CustomHeader = ({ navigate, t, handleFilter, status, handleFilterStatus, s
       </ValueContainer>
     )
   }
+
   return (
     <div className="invoice-list-table-header w-100 mb-75">
-      {/* <Row>
-        <Col lg={3} sm={6} xs={12} className="modal-search-col pl-0 my-50 d-flex align-items-center justify-content-center">
+      <Row>
+        {/* <Col lg={3} sm={6} xs={12} className="modal-search-col pl-0 my-50 d-flex align-items-center justify-content-center">
           <InputGroup className="ml-sm-0 input-group-merge product-search w-auto input-group-custom">
             <Input
               id="search-product"
@@ -79,8 +85,8 @@ const CustomHeader = ({ navigate, t, handleFilter, status, handleFilterStatus, s
               placeholder={`${t("Enter search")}...`}
             />
           </InputGroup>
-        </Col>
-        <Col lg={3} sm={6} xs={12} className="modal-search-col p-0 my-50 d-flex align-items-center justify-content-center">
+        </Col> */}
+        <Col lg={3} sm={6} xs={12} className="p-0 modal-search-col d-flex align-items-center justify-content-center">
           <Select
             styles={{
               container: (provided) => ({
@@ -109,27 +115,22 @@ const CustomHeader = ({ navigate, t, handleFilter, status, handleFilterStatus, s
               ValueContainer: CustomValueContainer
             }}
             style={{ width: "100%" }}
-            placeholder={t(renderStatus(status))}
+            placeholder={t(renderOrderStatus(orderStatus))}
             theme={selectThemeColors}
             className="react-select"
             classNamePrefix="select"
-            options={filterOptions({ t })}
+            options={filterOrderOptions()}
             isClearable={false}
             isSearchable={false}
-            onChange={({ value }) => handleFilterStatus(value)}
+            onChange={({ value }) => handleFilterOrderStatus(value)}
           />
         </Col>
-        <Col lg={3} sm={6} xs={12} className="my-50 px-0 px-md-1 d-flex align-items-center">
+        <Col lg={3} sm={6} xs={12} className="px-0 px-md-1 d-flex align-items-center">
           <Button className="button-search" color="primary" onClick={handleFilter}>
             {t("Search")}
           </Button>
         </Col>
-        <Col lg={12} sm={6} xs={12} className="d-flex p-0 mt-1 justify-content-end">
-          <div className="create-button">
-            <AddNewButton onClick={() => navigate("/tours/create")} text={t("Create")} />
-          </div>
-        </Col>
-      </Row> */}
+      </Row>
     </div>
   )
 }
@@ -138,17 +139,18 @@ const Table = () => {
   // ** Store Vars
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [loading, setLoading] = useState(false)
-  const store = useSelector((state) => state.tours)
+  const [pending, setPending] = useState(false)
+  const store = useSelector((state) => state.refunds)
   const [searchParams, setSearchParams] = useSearchParams()
   const paramsURL = useParams()
   // ** States
-  const [status, setStatus] = useState(searchParams.get("status") ? searchParams.get("status") : "all")
+  const [orderStatus, setOrderStatus] = useState(searchParams.get("orderStatus") ? searchParams.get("orderStatus") : "all")
+  const [paymentStatus, setPaymentStatus] = useState(searchParams.get("paymentStatus") ? searchParams.get("paymentStatus") : "all")
   const [currentPage, setCurrentPage] = useState(searchParams.get("page") ? +searchParams.get("page") : 1)
   const [searchTerm, setSearchTerm] = useState(searchParams.get("q") || "")
   const [rowsPerPage] = useState(10)
-  const [showReject, setShowReject] = useState({ status: false, id: null })
   const [showApprove, setShowApprove] = useState({ status: false, id: null })
 
   // ** Get data on mount
@@ -157,18 +159,28 @@ const Table = () => {
   }, [paramsURL])
 
   const handleGetData = () => {
-    dispatch(getIncomingTours(setLoading, { status: status || null, keyword: searchTerm || null, currentPage: currentPage, perPage: rowsPerPage }))
+    dispatch(
+      getRefunds(setLoading, {
+        location: searchTerm || null,
+        orderStatus: orderStatus !== "all" ? orderStatus : null,
+        paymentStatus: paymentStatus !== "all" ? paymentStatus : null,
+        currentPage,
+        perPage: rowsPerPage
+      })
+    )
   }
 
   const checkParams = (filterParams) => {
     const params = {}
-    if (filterParams.status !== "all") {
-      params.status = filterParams.status
-    }
     if (filterParams.q) {
       params.q = filterParams.q
     }
-
+    if (filterParams.orderStatus !== "all") {
+      params.orderStatus = filterParams.orderStatus
+    }
+    if (filterParams.paymentStatus !== "all") {
+      params.paymentStatus = filterParams.paymentStatus
+    }
     params.page = filterParams.page
 
     params.perPage = filterParams.limit
@@ -181,7 +193,8 @@ const Table = () => {
     checkParams({
       limit: rowsPerPage,
       page: page.selected + 1,
-      status,
+      orderStatus,
+      paymentStatus,
       q: searchTerm
     })
     setCurrentPage(page.selected + 1)
@@ -189,7 +202,7 @@ const Table = () => {
 
   // ** Function in get data on query change
   const handleFilter = () => {
-    checkParams({ limit: rowsPerPage, page: 1, status, q: searchTerm })
+    checkParams({ limit: rowsPerPage, page: 1, orderStatus, paymentStatus, q: searchTerm })
     setCurrentPage(1)
   }
 
@@ -218,35 +231,16 @@ const Table = () => {
   }
   // ** Table data to render
   const dataToRender = () => {
-    if (store.incomingTours?.length > 0) {
-      return store?.incomingTours
+    if (store.refunds?.length > 0) {
+      return store?.refunds
     } else {
       return []
     }
   }
-
-  const handleApproveTour = async () => {
+  const handleCompleteRefund = async () => {
     setLoading(true)
-    await approveIncomingTour(
-      {
-        tourId: showApprove?.id
-      },
-      (message) => {
-        toast.success(<SuccessNotificationToast message={message} />)
-        handleGetData()
-        setShowApprove({ status: false, id: null })
-      },
-      (message) => toast.error(<ErrorNotificationToast message={message} />),
-      () => setLoading(false)
-    )
-  }
-
-  const handleRejectTour = async () => {
-    setLoading(true)
-    await rejectIncomingTour(
-      {
-        tourId: showReject?.id
-      },
+    await updateStatusRefund(
+      { status: ORDER_STATUS.REFUND_COMPLETED, bookingId: showApprove?.id },
       (message) => {
         toast.success(<SuccessNotificationToast message={message} />)
         handleGetData()
@@ -259,7 +253,7 @@ const Table = () => {
 
   return (
     <>
-      {loading && <LoadingBackground />}
+      {pending && <LoadingBackground />}
       <Card>
         <div className="product-wrapper overflow-auto table-responsive sticky-actions">
           <DataTable
@@ -274,24 +268,30 @@ const Table = () => {
             progressComponent={<Spinner />}
             columns={columns({
               t,
-              navigate,
-              handleDeleteTour: setShowReject,
-              handleApproveTour: setShowApprove
+              handleCompleteRefund: setShowApprove
             })}
             sortIcon={<ChevronDown />}
             className="react-dataTable no-padding"
             data={dataToRender()}
             paginationComponent={CustomPagination}
-            noDataComponent={<NoDataComponent message={t("No tour yet")} />}
+            noDataComponent={<NoDataComponent message={t("No refund yet")} />}
             subHeaderComponent={
-              <CustomHeader navigate={navigate} t={t} handleFilter={handleFilter} status={status} handleFilterStatus={setStatus} handleSearch={setSearchTerm} searchTerm={searchTerm} />
+              <CustomHeader
+                t={t}
+                handleFilter={handleFilter}
+                paymentStatus={paymentStatus}
+                handleFilterPaymentStatus={setPaymentStatus}
+                orderStatus={orderStatus}
+                handleFilterOrderStatus={setOrderStatus}
+                handleSearch={setSearchTerm}
+                searchTerm={searchTerm}
+              />
             }
           />
         </div>
       </Card>
-      {showReject?.status && <ConfirmDelete message={"Confirm to reject tour"} button={"Reject"} submit={handleRejectTour} cancel={() => setShowReject({ status: false, id: null })} />}
       {showApprove?.status && (
-        <ConfirmApprove message={"Confirm to approve tour"} button={"Approve"} submit={handleApproveTour} cancel={() => setShowApprove({ status: false, id: null })} />
+        <ConfirmApprove message={"Confirm to complete this refund"} button={"Complete"} submit={handleCompleteRefund} cancel={() => setShowApprove({ status: false, id: null })} />
       )}
     </>
   )

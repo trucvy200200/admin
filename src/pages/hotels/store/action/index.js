@@ -2,24 +2,6 @@ import instances from "@src/@core/plugin/axios"
 
 export const GET_HOTELS = "GET_HOTELS"
 
-export const getTourById = (id, setLoading, handleSuccess, handleError) => {
-  try {
-    setLoading(true)
-    instances
-      .get(`/get-tour-by-id/`, { params: { tourId: id } })
-      .then((response) => {
-        setLoading(false)
-        handleSuccess(response?.data?.tours)
-      })
-      .catch(() => {
-        setLoading(false)
-        handleSuccess({})
-      })
-  } catch {
-    handleError("Something wrong")
-  }
-}
-
 export const getHotels = (setLoading, params) => {
   return async (dispatch) => {
     setLoading(true)
@@ -37,8 +19,8 @@ export const getHotels = (setLoading, params) => {
         setLoading(false)
         dispatch({
           type: GET_HOTELS,
-          tours: [],
-          hotels: 0
+          hotels: [],
+          total: 0
         })
       })
   }
@@ -64,27 +46,6 @@ export const createHotel = async (data, handleSuccess, handleError, endLoading) 
       })
   } catch (err) {
     handleError("Create hotel failed!")
-    endLoading()
-  }
-}
-
-export const updateTourStatus = async (data, handleSuccess, handleError, endLoading) => {
-  try {
-    await instances
-      .patch(`/update-tour-status/`, data)
-      .then((res) => {
-        endLoading()
-        if (res?.status === 200) {
-          handleSuccess("Update status successfully!")
-        } else {
-          handleError("Update status failed!")
-        }
-      })
-      .catch((err) => {
-        endLoading()
-        handleError("Update status failed!")
-      })
-  } catch (err) {
     endLoading()
   }
 }

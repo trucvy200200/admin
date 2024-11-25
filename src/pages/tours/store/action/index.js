@@ -222,3 +222,24 @@ export const approveIncomingTour = async (data, handleSuccess, handleError, endL
     endLoading()
   }
 }
+
+export const rejectIncomingTour = async (data, handleSuccess, handleError, endLoading) => {
+  try {
+    await instances
+      .post(`/incoming-tours/cancel`, data)
+      .then((res) => {
+        endLoading()
+        if (res?.status === 200) {
+          handleSuccess("Reject successfully!")
+        } else {
+          handleError("Reject failed!")
+        }
+      })
+      .catch((err) => {
+        endLoading()
+        handleError("Reject failed!")
+      })
+  } catch (err) {
+    endLoading()
+  }
+}

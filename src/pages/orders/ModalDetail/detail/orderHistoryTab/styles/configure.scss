@@ -1,0 +1,13 @@
+#orderHistoryTab {
+  .heading {
+    border-bottom: 1px solid grey;
+    text-align: left;
+    width: fit-content;
+    flex-shrink: 0;
+    margin-bottom: 20px;
+    font-weight: 600;
+  }
+  .rdt_Table {
+    min-height: 1px !important;
+  }
+}

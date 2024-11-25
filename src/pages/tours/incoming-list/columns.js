@@ -21,9 +21,9 @@ const renderStatus = (row) => {
     case 1:
       return "Approved"
     case 0:
-      return "Pending"
+      return "Waiting confirm"
     default:
-      return "Pending"
+      return "Waiting confirm"
   }
 }
 export const columns = ({ t, navigate, handleDeleteTour, handleApproveTour }) => [
@@ -89,23 +89,25 @@ export const columns = ({ t, navigate, handleDeleteTour, handleApproveTour }) =>
           <DropdownToggle tag="div" className="btn btn-sm">
             <MoreVertical size={16} className="cursor-pointer" />
           </DropdownToggle>
-          <DropdownMenu container="root">
-            {(row?.delFlg === 1 || !row?.buySlot) && (
-              <DropdownItem
-                className="w-100"
-                onClick={() => {
-                  handleApproveTour({ status: true, id: row?.id })
-                }}
-              >
-                <Check size={16} className="mr-50" />
-                <span className="align-middle">{t("Approve")}</span>
+          {!row?.isApprove && (
+            <DropdownMenu container="root">
+              {(row?.delFlg === 1 || !row?.buySlot) && (
+                <DropdownItem
+                  className="w-100"
+                  onClick={() => {
+                    handleApproveTour({ status: true, id: row?.id })
+                  }}
+                >
+                  <Check size={16} className="mr-50" />
+                  <span className="align-middle">{t("Approve")}</span>
+                </DropdownItem>
+              )}
+              <DropdownItem className="w-100" onClick={() => handleDeleteTour({ status: true, id: row?.id })}>
+                <X size={16} className="mr-50" />
+                <span className="align-middle">{t("Reject")}</span>
               </DropdownItem>
-            )}
-            <DropdownItem className="w-100" onClick={() => {}}>
-              <X size={16} className="mr-50" />
-              <span className="align-middle">{t("Reject")}</span>
-            </DropdownItem>
-          </DropdownMenu>
+            </DropdownMenu>
+          )}
         </UncontrolledDropdown>
       </>
     )

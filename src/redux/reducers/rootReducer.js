@@ -11,6 +11,8 @@ import profiles from "@pages/users/profile/store/reducer"
 import tours from "@pages/tours/store/reducer"
 import hotels from "@pages/hotels/store/reducer"
 import vehicles from "@pages/transportations/store/reducer"
+import orders from "@pages/orders/store/reducer"
+import refunds from "@pages/refunds/store/reducer"
 
 const rootReducer = combineReducers({
   authReducer,
@@ -21,7 +23,9 @@ const rootReducer = combineReducers({
   common,
   tours,
   hotels,
-  vehicles
+  vehicles,
+  orders,
+  refunds
 })
 
 export default rootReducer
