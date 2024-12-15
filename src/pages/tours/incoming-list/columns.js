@@ -7,6 +7,8 @@ import { FiSettings } from "react-icons/fi"
 
 const statusObjColor = (status) => {
   switch (status) {
+    case 2:
+      return "light-danger"
     case 1:
       return "light-success"
     case 0:
