@@ -18,6 +18,8 @@ const statusObjColor = (status) => {
 
 const renderStatus = (row) => {
   switch (row?.isApprove) {
+    case 2:
+      return "Disapproved"
     case 1:
       return "Approved"
     case 0:

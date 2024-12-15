@@ -219,7 +219,7 @@ const Table = () => {
   // ** Table data to render
   const dataToRender = () => {
     if (store.incomingTours?.length > 0) {
-      return store?.incomingTours.filter((item) => item?.delFlg === 0)
+      return store?.incomingTours.filter((item) => item?.isApprove !== 2)
     } else {
       return []
     }
