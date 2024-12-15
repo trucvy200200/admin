@@ -14,7 +14,7 @@ import { updateTourById, getTourById } from "../store/action"
 import { toast } from "react-hot-toast"
 import ErrorNotificationToast from "@src/components/Toast/ToastFail"
 import SuccessNotificationToast from "@src/components/Toast/ToastSuccess"
-import { useSearchParams, useNavigate, useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { EditorState, convertToRaw, ContentState } from "draft-js"
 import htmlToDraft from "html-to-draftjs"
 import draftToHtml from "draftjs-to-html"
@@ -27,6 +27,7 @@ import Cleave from "cleave.js/react"
 import { stringToDate } from "@src/utility/ConvertDate"
 import { getHotels } from "@src/pages/hotels/store/action"
 import { getVehicles } from "@src/pages/transportations/store/action"
+import EditorDescription from "@src/components/EditorDescription"
 
 import "flatpickr/dist/themes/material_blue.css"
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css"
@@ -83,7 +84,6 @@ const CreateTour = () => {
   const [regulationError, setRegulationError] = useState("")
   const [loading, setLoading] = useState(false)
   const [errorImage, setErrorImage] = useState(false)
-  const navigate = useNavigate()
   const { id } = useParams()
   const store = useSelector((state) => state.tours.detail)
   const dispatch = useDispatch()
@@ -129,16 +129,9 @@ const CreateTour = () => {
           setValue("limit", data?.limit)
           setTransportation(data?.transportationId)
           setHotel(data?.hotelId)
-          const state = data?.description || null
-          setEditorState(data?.description ? EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(state).contentBlocks, htmlToDraft(state).entityMap)) : "")
-          const state2 = data?.regulation || null
-          setEditorRegulationState(
-            data?.regulation ? EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(state2).contentBlocks, htmlToDraft(state2).entityMap)) : ""
-          )
+
           setRegulation(data?.regulation)
           if (typeof data?.plan === "string") {
-            const state3 = data?.plan || null
-            setEditorPlanState(data?.plan ? EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(state3).contentBlocks, htmlToDraft(state3).entityMap)) : "")
             setPlan(data?.plan)
           }
 
@@ -148,39 +141,6 @@ const CreateTour = () => {
       )
     }
   }, [id])
-
-  const onEditorStateChange = (e) => {
-    if (!e.getCurrentContent().getPlainText()) {
-      setDesc("")
-    } else {
-      const html = draftToHtml(convertToRaw(e.getCurrentContent())).toString()
-      setDesc(html ? html : "")
-      setDescError(false)
-    }
-    setEditorState(e)
-  }
-
-  const onEditorRegulationStateChange = (e) => {
-    if (!e.getCurrentContent().getPlainText()) {
-      setRegulation("")
-    } else {
-      const html = draftToHtml(convertToRaw(e.getCurrentContent())).toString()
-      setRegulation(html ? html : "")
-      setRegulationError(false)
-    }
-    setEditorRegulationState(e)
-  }
-
-  const onEditorPlanStateChange = (e) => {
-    if (!e.getCurrentContent().getPlainText()) {
-      setRegulation("")
-    } else {
-      const html = draftToHtml(convertToRaw(e.getCurrentContent())).toString()
-      setPlan(html ? html : "")
-      setPlanError(false)
-    }
-    setEditorPlanState(e)
-  }
 
   const onSubmit = async (e) => {
     if (loading) return
@@ -598,14 +558,7 @@ const CreateTour = () => {
                 <Label className="form-label" for="desc">
                   {t("Description")} <span className="text-danger">*</span>
                 </Label>
-                <Editor
-                  id="desc"
-                  editorState={editorState}
-                  toolbarClassName="descToolbar"
-                  wrapperClassName={`descWrapper ${descError ? "error" : ""}`}
-                  editorClassName="descEditor"
-                  onEditorStateChange={onEditorStateChange}
-                />
+                <EditorDescription setValue={setDesc} value={desc} />
               </FormGroup>
             </Col>
             <Col md="12">
@@ -613,14 +566,7 @@ const CreateTour = () => {
                 <Label className="form-label" for="plan">
                   {t("Plan")} <span className="text-danger">*</span>
                 </Label>
-                <Editor
-                  id="plan"
-                  editorState={editorPlanState}
-                  toolbarClassName="descToolbar"
-                  wrapperClassName={`descWrapper ${planError ? "error" : ""}`}
-                  editorClassName="descEditor"
-                  onEditorStateChange={onEditorPlanStateChange}
-                />
+                <EditorDescription setValue={setPlan} value={plan} />
               </FormGroup>
             </Col>
             <Col md="12">
@@ -628,14 +574,7 @@ const CreateTour = () => {
                 <Label className="form-label" for="reg">
                   {t("Regulation")} <span className="text-danger">*</span>
                 </Label>
-                <Editor
-                  id="reg"
-                  editorState={editorRegulationState}
-                  toolbarClassName="descToolbar"
-                  wrapperClassName={`descWrapper ${regulationError ? "error" : ""}`}
-                  editorClassName="descEditor"
-                  onEditorStateChange={onEditorRegulationStateChange}
-                />
+                <EditorDescription setValue={setRegulation} value={regulation} />
               </FormGroup>
             </Col>
             <Col md="12">

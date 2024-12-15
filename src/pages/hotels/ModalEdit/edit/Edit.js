@@ -16,15 +16,14 @@ import htmlToDraft from "html-to-draftjs"
 import draftToHtml from "draftjs-to-html"
 import Cleave from "cleave.js/react"
 import { updateHotelById } from "../../store/action"
+import EditorDescription from "@src/components/EditorDescription"
 
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css"
 
 const Edit = ({ data, t, handleNoButton, handleGetUpdateData }) => {
   // ** States
   const [loading, setLoading] = useState(false)
-  const [editorState, setEditorState] = useState(null)
   const [desc, setDesc] = useState(null)
-  const descEditorRef = React.useRef(null)
   const [numberErrors, setNumberErrors] = useState(null)
   const {
     setError,
@@ -40,9 +39,6 @@ const Edit = ({ data, t, handleNoButton, handleGetUpdateData }) => {
   useEffect(() => {
     if (data?.description) {
       setDesc(data?.description ? data?.description : "")
-      const state = data?.description || null
-      setEditorState(data?.description ? EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(state).contentBlocks, htmlToDraft(state).entityMap)) : "")
-      descEditorRef.current = document.querySelector("#Desc .descEditor")
     }
     if (data?.id) {
       setValue("price", data?.pricePerNight)
@@ -78,16 +74,6 @@ const Edit = ({ data, t, handleNoButton, handleGetUpdateData }) => {
         () => setLoading(false)
       )
     }
-  }
-
-  const onEditorStateChange = (e) => {
-    if (!e.getCurrentContent().getPlainText()) {
-      setDesc(" ")
-    } else {
-      const html = draftToHtml(convertToRaw(e.getCurrentContent())).toString()
-      setDesc(html ? html : " ")
-    }
-    setEditorState(e)
   }
 
   return (
@@ -240,7 +226,7 @@ const Edit = ({ data, t, handleNoButton, handleGetUpdateData }) => {
             {t("Description")}
           </Label>
           <div id="Desc">
-            <Editor editorState={editorState} toolbarClassName="descToolbar" wrapperClassName="descWrapper" editorClassName="descEditor" onEditorStateChange={onEditorStateChange} />
+            <EditorDescription setValue={setDesc} value={desc} />
           </div>
         </FormGroup>
         <div className="d-flex align-items-center justify-content-end">

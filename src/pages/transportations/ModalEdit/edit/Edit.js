@@ -67,7 +67,6 @@ const Edit = ({ data, t, handleNoButton, handleGetUpdateData }) => {
 
   useEffect(() => {
     if (data?.id) {
-      console.log(data)
       setValue("price", data?.price)
       setValue("brand", data?.transportName)
       setType(data?.type)

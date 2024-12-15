@@ -2,6 +2,7 @@ import instances, { instancesV4 } from "@src/@core/plugin/axios"
 
 export const GET_TOURS = "GET_TOURS"
 export const GET_INCOMING_TOURS = "GET_INCOMING_TOURS"
+export const GET_CUSTOMER_LIST = "GET_CUSTOMER_LIST"
 
 export const deleteTour = async (data, handleSuccess, handleError, endLoading) => {
   try {
@@ -241,5 +242,29 @@ export const rejectIncomingTour = async (data, handleSuccess, handleError, endLo
       })
   } catch (err) {
     endLoading()
+  }
+}
+
+export const getCustomerList = (setLoading, params) => {
+  return async (dispatch) => {
+    setLoading(true)
+    instances
+      .get(`/deposit-users`, { params })
+      .then((response) => {
+        setLoading(false)
+        dispatch({
+          type: GET_CUSTOMER_LIST,
+          customers: response?.data?.data,
+          total: response?.data?.total
+        })
+      })
+      .catch(() => {
+        setLoading(false)
+        dispatch({
+          type: GET_CUSTOMER_LIST,
+          customers: [],
+          total: 0
+        })
+      })
   }
 }

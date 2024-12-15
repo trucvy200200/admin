@@ -397,3 +397,7 @@ export function isJSONString(str) {
     return false
   }
 }
+
+export const checkEmptyHtmlString = (value) => {
+  return !value || !value.replace(/(<([^>]+)>)/gi, "")?.trim()?.length
+}

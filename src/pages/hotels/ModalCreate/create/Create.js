@@ -10,18 +10,15 @@ import SuccessNotificationToast from "@src/components/Toast/ToastSuccess"
 import { useForm, Controller } from "react-hook-form"
 import { LoadingBackground } from "@src/components/Loading/LoadingBackground"
 import classnames from "classnames"
-import { Editor } from "react-draft-wysiwyg"
-import { EditorState, convertToRaw } from "draft-js"
-import draftToHtml from "draftjs-to-html"
 import Cleave from "cleave.js/react"
 import { createHotel } from "../../store/action"
+import EditorDescription from "@src/components/EditorDescription"
 
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css"
 
 const Create = ({ handleGetData, t, handleNoButton }) => {
   // ** States
   const [loading, setLoading] = useState(false)
-  const [editorState, setEditorState] = useState(EditorState.createEmpty())
   const [desc, setDesc] = useState(null)
   const [numberErrors, setNumberErrors] = useState(null)
   const {
@@ -59,16 +56,6 @@ const Create = ({ handleGetData, t, handleNoButton }) => {
         () => setLoading(false)
       )
     }
-  }
-
-  const onEditorStateChange = (e) => {
-    if (!e.getCurrentContent().getPlainText()) {
-      setDesc(" ")
-    } else {
-      const html = draftToHtml(convertToRaw(e.getCurrentContent())).toString()
-      setDesc(html ? html : " ")
-    }
-    setEditorState(e)
   }
 
   return (
@@ -221,7 +208,7 @@ const Create = ({ handleGetData, t, handleNoButton }) => {
             {t("Description")}
           </Label>
           <div id="Desc">
-            <Editor editorState={editorState} toolbarClassName="descToolbar" wrapperClassName="descWrapper" editorClassName="descEditor" onEditorStateChange={onEditorStateChange} />
+            <EditorDescription setValue={setDesc} value={desc} />
           </div>
         </FormGroup>
         <div className="d-flex align-items-center justify-content-end mb-0">

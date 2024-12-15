@@ -1,7 +1,7 @@
 // ** Third Party Components
 import React from "react"
 import { Badge, UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap"
-import { MoreVertical, Edit, Check, X } from "react-feather"
+import { MoreVertical, Eye, Check, X } from "react-feather"
 import { convertDateString } from "@src/utility/ConvertDate"
 import { FiSettings } from "react-icons/fi"
 
@@ -91,6 +91,10 @@ export const columns = ({ t, navigate, handleDeleteTour, handleApproveTour }) =>
           </DropdownToggle>
           {!row?.isApprove && (
             <DropdownMenu container="root">
+              <DropdownItem className="w-100" onClick={() => navigate(`/incoming-tours/customer-list/${row?.id}`)}>
+                <Eye size={16} className="mr-50" />
+                <span className="align-middle">View customer list</span>
+              </DropdownItem>
               {(row?.delFlg === 1 || !row?.buySlot) && (
                 <DropdownItem
                   className="w-100"

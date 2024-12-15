@@ -1143,3 +1143,13 @@ small {
     font-size: 12px !important;
   }
 }
+
+.tox-edit-area iframe {
+  display: initial !important;
+}
+.tox-statusbar__branding,
+.tox-statusbar__resize-handle,
+.tox-statusbar__help-text,
+.tox-promotion {
+  display: none !important;
+}

@@ -5,9 +5,6 @@ import { isObjEmpty } from "@utils"
 import { Row, Col, Button, Form, Input, Label, FormGroup, Card } from "reactstrap"
 import { useForm, Controller } from "react-hook-form"
 import classnames from "classnames"
-import { Editor } from "react-draft-wysiwyg"
-import { convertToRaw } from "draft-js"
-import draftToHtml from "draftjs-to-html"
 import { LoadingBackground } from "@src/components/Loading/LoadingBackground"
 import FileUploaderMultiple from "@src/components/FileUploader/FileUploaderMultiple"
 import { useTranslation } from "react-i18next"
@@ -15,7 +12,7 @@ import { createTour } from "../store/action"
 import { toast } from "react-hot-toast"
 import ErrorNotificationToast from "@src/components/Toast/ToastFail"
 import SuccessNotificationToast from "@src/components/Toast/ToastSuccess"
-import { useSearchParams, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import Select, { components } from "react-select"
 import { selectThemeColors } from "@utils"
 import { uploadImages } from "@src/redux/actions/common"
@@ -27,6 +24,7 @@ import { getHotels } from "@src/pages/hotels/store/action"
 import { getVehicles } from "@src/pages/transportations/store/action"
 import { useDispatch, useSelector } from "react-redux"
 import { useEffect } from "react"
+import EditorDescription from "@src/components/EditorDescription"
 
 import "flatpickr/dist/themes/material_blue.css"
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css"
@@ -108,39 +106,6 @@ const CreateTour = () => {
     dispatch(getHotels(setLoading, {}))
     dispatch(getVehicles(setLoading, {}))
   }, [])
-
-  const onEditorStateChange = (e) => {
-    if (!e.getCurrentContent().getPlainText()) {
-      setDesc("")
-    } else {
-      const html = draftToHtml(convertToRaw(e.getCurrentContent())).toString()
-      setDesc(html ? html : "")
-      setDescError(false)
-    }
-    setEditorState(e)
-  }
-
-  const onEditorRegulationStateChange = (e) => {
-    if (!e.getCurrentContent().getPlainText()) {
-      setRegulation("")
-    } else {
-      const html = draftToHtml(convertToRaw(e.getCurrentContent())).toString()
-      setRegulation(html ? html : "")
-      setRegulationError(false)
-    }
-    setEditorRegulationState(e)
-  }
-
-  const onEditorPlanStateChange = (e) => {
-    if (!e.getCurrentContent().getPlainText()) {
-      setRegulation("")
-    } else {
-      const html = draftToHtml(convertToRaw(e.getCurrentContent())).toString()
-      setPlan(html ? html : "")
-      setPlanError(false)
-    }
-    setEditorPlanState(e)
-  }
 
   const onSubmit = async (e) => {
     if (loading) return
@@ -559,14 +524,7 @@ const CreateTour = () => {
                 <Label className="form-label" for="desc">
                   {t("Description")} <span className="text-danger">*</span>
                 </Label>
-                <Editor
-                  id="desc"
-                  editorState={editorState}
-                  toolbarClassName="descToolbar"
-                  wrapperClassName={`descWrapper ${descError ? "error" : ""}`}
-                  editorClassName="descEditor"
-                  onEditorStateChange={onEditorStateChange}
-                />
+                <EditorDescription setValue={setDesc} value={desc} />
               </FormGroup>
             </Col>
             <Col md="12">
@@ -574,14 +532,7 @@ const CreateTour = () => {
                 <Label className="form-label" for="plan">
                   {t("Plan")} <span className="text-danger">*</span>
                 </Label>
-                <Editor
-                  id="plan"
-                  editorState={editorPlanState}
-                  toolbarClassName="descToolbar"
-                  wrapperClassName={`descWrapper ${planError ? "error" : ""}`}
-                  editorClassName="descEditor"
-                  onEditorStateChange={onEditorPlanStateChange}
-                />
+                <EditorDescription setValue={setPlan} value={plan} />
               </FormGroup>
             </Col>
             <Col md="12">
@@ -589,14 +540,7 @@ const CreateTour = () => {
                 <Label className="form-label" for="reg">
                   {t("Regulation")} <span className="text-danger">*</span>
                 </Label>
-                <Editor
-                  id="reg"
-                  editorState={editorRegulationState}
-                  toolbarClassName="descToolbar"
-                  wrapperClassName={`descWrapper ${regulationError ? "error" : ""}`}
-                  editorClassName="descEditor"
-                  onEditorStateChange={onEditorRegulationStateChange}
-                />
+                <EditorDescription setValue={setRegulation} value={regulation} />
               </FormGroup>
             </Col>
 
@@ -612,9 +556,9 @@ const CreateTour = () => {
               <Button.Ripple
                 disabled={loading}
                 onClick={() => {
-                  if (!desc) setDescError(true)
-                  if (!plan) setPlanError(true)
-                  if (!regulation) setRegulationError(true)
+                  if (!desc) return toast.error(<ErrorNotificationToast message="Please enter description" />)
+                  if (!plan) return toast.error(<ErrorNotificationToast message="Please enter plan" />)
+                  if (!regulation) return toast.error(<ErrorNotificationToast message="Please enter regulation" />)
                 }}
                 className="mb-0 mr-0"
                 type="submit"

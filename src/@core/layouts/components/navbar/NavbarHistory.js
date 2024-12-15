@@ -8,6 +8,8 @@ const renderCurrentPath = (pathname, t) => {
     return t("Edit tour guide")
   } else if (pathname.includes("/tours/edit")) {
     return t("Edit tour")
+  } else if (pathname.includes("/incoming-tours/customer-list")) {
+    return t("Customer list")
   } else
     switch (pathname) {
       case "/dashboard":
@@ -32,6 +34,7 @@ const renderCurrentPath = (pathname, t) => {
         return t("Order list")
       case "/refunds/list":
         return t("Refund list")
+
       default:
         break
     }
