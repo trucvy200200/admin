@@ -89,29 +89,29 @@ export const columns = ({ t, navigate, handleDeleteTour, handleApproveTour }) =>
           <DropdownToggle tag="div" className="btn btn-sm">
             <MoreVertical size={16} className="cursor-pointer" />
           </DropdownToggle>
-          {!row?.isApprove && (
-            <DropdownMenu container="root">
-              <DropdownItem className="w-100" onClick={() => navigate(`/incoming-tours/customer-list/${row?.id}`)}>
-                <Eye size={16} className="mr-50" />
-                <span className="align-middle">View customer list</span>
+          <DropdownMenu container="root">
+            <DropdownItem className="w-100" onClick={() => navigate(`/incoming-tours/customer-list/${row?.id}`)}>
+              <Eye size={16} className="mr-50" />
+              <span className="align-middle">View customer list</span>
+            </DropdownItem>
+            {!row?.isApprove && (row?.delFlg === 1 || !row?.buySlot) && (
+              <DropdownItem
+                className="w-100"
+                onClick={() => {
+                  handleApproveTour({ status: true, id: row?.id })
+                }}
+              >
+                <Check size={16} className="mr-50" />
+                <span className="align-middle">{t("Approve")}</span>
               </DropdownItem>
-              {(row?.delFlg === 1 || !row?.buySlot) && (
-                <DropdownItem
-                  className="w-100"
-                  onClick={() => {
-                    handleApproveTour({ status: true, id: row?.id })
-                  }}
-                >
-                  <Check size={16} className="mr-50" />
-                  <span className="align-middle">{t("Approve")}</span>
-                </DropdownItem>
-              )}
+            )}
+            {!row?.isApprove && (
               <DropdownItem className="w-100" onClick={() => handleDeleteTour({ status: true, id: row?.id })}>
                 <X size={16} className="mr-50" />
                 <span className="align-middle">{t("Reject")}</span>
               </DropdownItem>
-            </DropdownMenu>
-          )}
+            )}
+          </DropdownMenu>
         </UncontrolledDropdown>
       </>
     )

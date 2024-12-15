@@ -50,18 +50,18 @@ export const columns = ({ t }) => [
     width: "120px",
     cell: (row) => (
       <div className="d-flex justify-content-left align-items-center flex-column">
-        <p className="w-100 mb-0 text-truncate-1">{row?.phone || 0}</p>
+        <p className="w-100 mb-0 text-truncate-1">{row?.phone || "---"}</p>
       </div>
     )
   },
   {
     name: t("Email"),
-    minWidth: "120px",
-    selector: (row) => row?.limit || 0
+    minWidth: "200px",
+    selector: (row) => <div className="text-truncate-1">{row?.email || "---"}</div>
   },
   {
     name: "Payment status",
-    width: "150px",
+    width: "200px",
     selector: (row) => (
       <Badge className="text-capitalize" color={paymentStatusObjColor(row?.paymentStatus)} pill>
         {t(renderPaymentStatus(row))}
@@ -71,13 +71,15 @@ export const columns = ({ t }) => [
 
   {
     name: t("Number of adults"),
-    minWidth: "120px",
-    selector: (row) => row?.adultTicket || 0
+    minWidth: "160px",
+    center: "true",
+    selector: (row) => <div>{row?.adultTicket || 0}</div>
   },
   {
     name: t("Number of children"),
-    minWidth: "120px",
-    selector: (row) => row?.childTicket || 0
+    minWidth: "160px",
+    center: "true",
+    selector: (row) => <div>{row?.childTicket || 0}</div>
   },
   {
     name: "Payment date",

@@ -28,7 +28,7 @@ const tours = (state = initialState, action) => {
         total: action.total,
         params: action.params
       }
-    case GET_INCOMING_TOURS:
+    case GET_CUSTOMER_LIST:
       return {
         ...state,
         customers: { data: action.customers, total: action.total }
