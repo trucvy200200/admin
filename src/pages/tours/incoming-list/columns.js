@@ -98,7 +98,7 @@ export const columns = ({ t, navigate, handleDeleteTour, handleApproveTour }) =>
               <Eye size={16} className="mr-50" />
               <span className="align-middle">View customer list</span>
             </DropdownItem>
-            {!row?.isApprove && (row?.delFlg === 1 || !row?.buySlot) && (
+            {!row?.isApprove && row?.delFlg === 0 && (
               <DropdownItem
                 className="w-100"
                 onClick={() => {
@@ -109,7 +109,7 @@ export const columns = ({ t, navigate, handleDeleteTour, handleApproveTour }) =>
                 <span className="align-middle">{t("Approve")}</span>
               </DropdownItem>
             )}
-            {!row?.isApprove && (
+            {!row?.isApprove && row?.delFlg === 0 && (
               <DropdownItem className="w-100" onClick={() => handleDeleteTour({ status: true, id: row?.id })}>
                 <X size={16} className="mr-50" />
                 <span className="align-middle">{t("Reject")}</span>

@@ -57,11 +57,12 @@ export const columns = ({ t }) => [
   {
     name: t("Email"),
     minWidth: "200px",
-    selector: (row) => <div className="text-truncate-1">{row?.email || "---"}</div>
+    cell: (row) => row?.email || "---"
   },
   {
     name: "Payment status",
-    width: "200px",
+    width: "250px",
+    center: true,
     selector: (row) => (
       <Badge className="text-capitalize" color={paymentStatusObjColor(row?.paymentStatus)} pill>
         {t(renderPaymentStatus(row))}

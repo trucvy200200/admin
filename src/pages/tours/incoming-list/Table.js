@@ -219,7 +219,7 @@ const Table = () => {
   // ** Table data to render
   const dataToRender = () => {
     if (store.incomingTours?.length > 0) {
-      return store?.incomingTours.filter((item) => item?.isApprove !== 2)
+      return store?.incomingTours
     } else {
       return []
     }
@@ -250,7 +250,7 @@ const Table = () => {
       (message) => {
         toast.success(<SuccessNotificationToast message={message} />)
         handleGetData()
-        setShowApprove({ status: false, id: null })
+        setShowReject({ status: false, id: null })
       },
       (message) => toast.error(<ErrorNotificationToast message={message} />),
       () => setLoading(false)
