@@ -24,10 +24,7 @@ const RevenueChart = () => {
     scales: {
       y: {
         min: 0,
-        scaleLabel: { display: true },
-        ticks: {
-          stepSize: 20
-        }
+        scaleLabel: { display: true }
       }
     },
     plugins: {
