@@ -13,6 +13,7 @@ import hotels from "@pages/hotels/store/reducer"
 import vehicles from "@pages/transportations/store/reducer"
 import orders from "@pages/orders/store/reducer"
 import refunds from "@pages/refunds/store/reducer"
+import dashboard from "@pages/dashboard/store/reducer"
 
 const rootReducer = combineReducers({
   authReducer,
@@ -25,7 +26,8 @@ const rootReducer = combineReducers({
   hotels,
   vehicles,
   orders,
-  refunds
+  refunds,
+  dashboard
 })
 
 export default rootReducer

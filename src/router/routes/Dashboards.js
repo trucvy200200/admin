@@ -5,8 +5,18 @@ const Hotels = lazy(() => import("@src/pages/hotels/list"))
 const Orders = lazy(() => import("@src/pages/orders/list"))
 const Refunds = lazy(() => import("@src/pages/refunds/list"))
 const CustomerList = lazy(() => import("@src/pages/tours/incoming-list/customer-list"))
+const Dashboard = lazy(() => import("@src/pages/dashboard"))
 
 const DashboardRoutes = [
+  {
+    path: "/dashboard",
+    element: <Dashboard />,
+    meta: {
+      appLayout: true,
+      action: "view",
+      resource: "dashboard"
+    }
+  },
   {
     path: "/vehicles/list",
     element: <Vehicles />,

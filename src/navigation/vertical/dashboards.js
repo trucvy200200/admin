@@ -6,6 +6,15 @@ import { TbComet } from "react-icons/tb"
 
 export default [
   {
+    id: "dashboard",
+    title: "Dashboard",
+    icon: <Home size={20} />,
+    badge: "light-warning",
+    navLink: "/dashboard",
+    action: "view",
+    resource: "tour_management"
+  },
+  {
     id: "tours",
     title: "Tours",
     icon: <Database size={20} />,
