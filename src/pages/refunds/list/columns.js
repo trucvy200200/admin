@@ -56,8 +56,8 @@ const renderOrderStatus = (row) => {
 export const columns = ({ t, handleCompleteRefund }) => [
   {
     name: t("No."),
-    width: "250px",
-    cell: (row, index) => <div className="d-flex justify-content-left align-items-center text-primary">{row?.idOder}</div>
+    width: "60px",
+    cell: (row, index) => <div className="d-flex justify-content-left align-items-center text-primary">{index + 1}</div>
   },
   {
     name: "Payment code",

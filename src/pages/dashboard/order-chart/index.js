@@ -35,7 +35,7 @@ const OrderPieChart = () => {
   const store = useSelector((state) => state?.dashboard?.orderChart)
   const [activeIndex, setActiveIndex] = useState(0)
   // ** Chart Data
-  const data = store?.dataOrder?.map((item, index) => ({ name: renderOrderStatus(item?._id), value: item?.count || 0, color: colors[index < 10 ? index : 8] }))
+  const data = store?.dataOrder?.map((item, index) => ({ name: renderOrderStatus(item?.status), value: item?.count || 0, color: colors[index < 10 ? index : 8] }))
 
   const renderActiveShape = (props) => {
     const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill, payload } = props
@@ -68,7 +68,7 @@ const OrderPieChart = () => {
         <div className="recharts-wrapper">
           <ResponsiveContainer height={300}>
             <PieChart height={300}>
-              <Pie activeIndex={activeIndex} activeShape={renderActiveShape} data={data} cx="50%" cy="50%" innerRadius={55} outerRadius={80} dataKey="value" onMouseEnter={onPieEnter}>
+              <Pie activeIndex={activeIndex} activeShape={renderActiveShape} data={data} cx="50%" cy="50%" innerRadius={100} outerRadius={150} dataKey="value" onMouseEnter={onPieEnter}>
                 {data?.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} label />
                 ))}
