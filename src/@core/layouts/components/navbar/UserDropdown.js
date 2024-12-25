@@ -79,10 +79,6 @@ const UserDropdown = () => {
           </div>
         </DropdownToggle>
         <DropdownMenu end>
-          <DropdownItem tag={Link} to="/profile">
-            <User size={16} style={{ marginRight: "7.5px" }} />
-            <span className="align-middle">{t("Profile")}</span>
-          </DropdownItem>
           <DropdownItem onClick={handleLogoutUser}>
             <Power size={16} style={{ marginRight: "7.5px" }} />
             <span className="align-middle">{t("Logout")}</span>
