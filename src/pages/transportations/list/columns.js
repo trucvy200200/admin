@@ -20,8 +20,8 @@ const renderType = (type) => {
 export const columns = ({ t, handleEditVehicle, handleDeleteVehicle }) => [
   {
     name: t("No."),
-    width: "250px",
-    cell: (row, index) => <div className="d-flex justify-content-left align-items-center text-primary">{row?.id}</div>
+    width: "60px",
+    cell: (row, index) => <div className="d-flex justify-content-left align-items-center text-primary">{index + 1}</div>
   },
   {
     name: t("Vehicle name"),

@@ -12,14 +12,14 @@ export const getOrderChart = (setLoading, params) => {
         setLoading(false)
         dispatch({
           type: GET_ORDER_CHART,
-          orderChart: response?.data?.message,
+          orderChart: response?.data?.message
         })
       })
       .catch(() => {
         setLoading(false)
         dispatch({
           type: GET_ORDER_CHART,
-          orderChart: [],  
+          orderChart: []
         })
       })
   }
@@ -34,14 +34,14 @@ export const getRevenueChart = (setLoading, params) => {
         setLoading(false)
         dispatch({
           type: GET_RENENUE_CHART,
-          revenueChart: response?.data?.data,
+          revenueChart: response?.data?.message
         })
       })
       .catch(() => {
         setLoading(false)
         dispatch({
           type: GET_RENENUE_CHART,
-          revenueChart: [],     
+          revenueChart: []
         })
       })
   }

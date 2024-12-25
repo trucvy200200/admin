@@ -69,8 +69,8 @@ const renderOrderStatus = (row) => {
 export const columns = ({ t, handleSeeDetail }) => [
   {
     name: t("No."),
-    width: "250px",
-    cell: (row, index) => <div className="d-flex justify-content-left align-items-center text-primary">{row?.id}</div>
+    width: "60px",
+    cell: (row, index) => <div className="d-flex justify-content-left align-items-center text-primary">{index + 1}</div>
   },
   {
     name: "Payment code",

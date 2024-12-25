@@ -31,8 +31,8 @@ const renderStatus = (row) => {
 export const columns = ({ t, handleEditHotel, handleDeleteHotel }) => [
   {
     name: t("No."),
-    width: "250px",
-    cell: (row, index) => <div className="d-flex justify-content-left align-items-center text-primary">{row?.id}</div>
+    width: "60px",
+    cell: (row, index) => <div className="d-flex justify-content-left align-items-center text-primary">{index + 1}</div>
   },
   {
     name: t("Hotel name"),

@@ -11,10 +11,10 @@ import "@styles/react/libs/charts/recharts.scss"
 
 const RevenueChart = () => {
   const { t } = useTranslation()
-  const dataChart = useSelector((state) => state?.dashboard?.revenueChart)
+  const dataChart = useSelector((state) => state?.dashboard?.revenueChart || [])
 
   const setUnionArr = () => {
-    let newArr = (dataChart?.dailyData||[]).map((item) => item?.day+'/'+dataChart?._id?.month+'/'+dataChart?._id?.year)
+    let newArr = (dataChart?.dataOrder?.[0]?.dailyData || []).map((item) => item?.day + "/" + dataChart?.dataOrder?.[0]?._id?.month + "/" + dataChart?.dataOrder?.[0]?._id?.year)
     return newArr
   }
   const options = {
@@ -24,10 +24,7 @@ const RevenueChart = () => {
     scales: {
       y: {
         min: 0,
-        scaleLabel: { display: true },
-        ticks: {
-          stepSize: 20
-        }
+        scaleLabel: { display: true }
       }
     },
     plugins: {
@@ -47,7 +44,7 @@ const RevenueChart = () => {
     labels: setUnionArr(),
     datasets: [
       {
-        data: (dataChart || []).map((value) => (value?.dailyDeposit ? value?.dailyDeposit : 0)),
+        data: dataChart?.dataOrder?.[0]?.dailyData?.map((value) => value?.dailyDeposit),
         fill: false,
         tension: 0.5,
         pointRadius: 1,
@@ -57,7 +54,7 @@ const RevenueChart = () => {
         pointHoverBorderWidth: 5,
         borderColor: "#89c251",
         backgroundColor: "#89c251"
-      },
+      }
     ]
   }
 
@@ -81,7 +78,7 @@ const RevenueChart = () => {
         </div>
       </CardHeader>
       <CardBody>
-        <div style={{ height: "450px" }}>
+        <div style={{ height: "450px", width: "100%" }}>
           <Line data={data} options={options} height={450} plugins={plugins} />
         </div>
       </CardBody>
